@@ -1,0 +1,10 @@
+^data-raw$
+^validation$
+^\.git$
+^\.gitignore$
+^.*\.Rproj$
+^\.Rproj\.user$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^LEEME\.md$

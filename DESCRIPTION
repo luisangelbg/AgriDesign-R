@@ -1,0 +1,30 @@
+Package: AgriDesign
+Title: Design and Analysis of Agricultural Experiments
+Version: 0.0.0.9000
+Authors@R:
+    person("Luis Ángel", "Barrera-Guzmán", , "lbarrerag@chapingo.mx", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0001-8057-2583"))
+Description: Plans and analyses agricultural experiments with classical
+    designs: completely randomised, randomised complete blocks (also
+    generalised), Latin squares, incomplete blocks, augmented designs,
+    factorials, split-plots, strip-plots, split-split-plots and nested
+    designs, with or without covariates. Each analysis of variance uses
+    the right error stratum for every term, reports least-squares means
+    and their standard errors, and checks the assumptions of the model.
+    The package is written in base R only and has no dependencies on
+    other packages.
+License: GPL (>= 3)
+URL: https://github.com/luisangelbg/AgriDesign-R
+BugReports: https://github.com/luisangelbg/AgriDesign-R/issues
+Depends:
+    R (>= 4.1.0)
+Imports:
+    stats,
+    utils
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.1
