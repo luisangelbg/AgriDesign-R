@@ -1,0 +1,14 @@
+{
+  "title": "AgriDesign: Design and Analysis of Agricultural Experiments (R package)",
+  "upload_type": "software",
+  "description": "R package for the design and analysis of agricultural experiments: analysis of variance of 16 classical designs with the right error strata, assumption checks, transformations and rank-based alternatives, mean separation with eleven procedures and compact letters, simple effects, trends and contrasts, recovery of inter-block information by REML, randomised field layouts with field books, efficiency factors and power, publication figures and HTML reports, plant breeding analyses (AMMI, stability, line x tester, diallel, North Carolina designs) and plant pathology tools (AUDPC, AUDPS, soil heterogeneity). Base R only. Every statistic is validated against independent implementations.",
+  "creators": [
+    {
+      "name": "Barrera-Guzmán, Luis Ángel",
+      "orcid": "0000-0001-8057-2583"
+    }
+  ],
+  "license": "GPL-3.0-or-later",
+  "keywords": ["R package", "experimental design", "analysis of variance", "agricultural experiments", "mean separation", "incomplete block designs", "plant breeding", "randomisation"],
+  "language": "eng"
+}

@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "AgriDesign: Design and Analysis of Agricultural Experiments"
+abstract: >-
+  R package for the design and analysis of agricultural experiments: analysis of
+  variance of 16 classical designs with the right error strata, assumption checks,
+  mean separation with eleven procedures and compact letters, recovery of
+  inter-block information by REML, randomised field layouts, plant breeding and
+  plant pathology analyses, publication figures and HTML reports. Base R only.
+type: software
+authors:
+  - given-names: "Luis Ángel"
+    family-names: "Barrera-Guzmán"
+    email: lbarrerag@chapingo.mx
+    orcid: "https://orcid.org/0000-0001-8057-2583"
+version: "1.0.0"
+date-released: "2026-10-22"
+license: GPL-3.0-or-later
+repository-code: "https://github.com/luisangelbg/AgriDesign-R"
+url: "https://luisangelbg.github.io/AgriDesign-R/"
+keywords:
+  - R package
+  - experimental design
+  - analysis of variance
+  - agricultural experiments
+  - plant breeding

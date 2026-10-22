@@ -1,6 +1,6 @@
 Package: AgriDesign
 Title: Design and Analysis of Agricultural Experiments
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R:
     person("Luis Ángel", "Barrera-Guzmán", , "lbarrerag@chapingo.mx", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-8057-2583"))

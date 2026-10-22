@@ -216,7 +216,7 @@ found with other software.
 ## Citation
 
     Barrera-Guzmán L (2026). _AgriDesign: Design and Analysis of Agricultural Experiments_. R
-    package version 0.0.0.9000, <https://github.com/luisangelbg/AgriDesign-R>.
+    package version 1.0.0, <https://github.com/luisangelbg/AgriDesign-R>.
 
 ## Licence
 

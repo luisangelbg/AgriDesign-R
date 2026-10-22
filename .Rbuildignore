@@ -13,3 +13,7 @@
 ^\.github$
 ^vignettes/articles$
 ^README\.html$
+^cran-comments\.md$
+^\.zenodo\.json$
+^CITATION\.cff$
+^CRAN-SUBMISSION$
