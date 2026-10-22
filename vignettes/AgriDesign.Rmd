@@ -1,0 +1,140 @@
+---
+title: "Getting started with AgriDesign"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with AgriDesign}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(width = 100)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.4, dpi = 72, out.width = "100%")
+```
+
+AgriDesign follows the steps of the analysis of a field trial: fit the model of
+the design, check its assumptions, compare the treatments, draw the figures and
+write the report. This vignette walks through them with a maize trial: four
+nitrogen rates in a randomised complete block design with four blocks.
+
+```{r}
+library(AgriDesign)
+head(maize_nitrogen)
+```
+
+## 1. The analysis of variance
+
+`design_anova()` takes the data in long format (one row per plot) and the
+role of each column: the response, the treatment factor(s), the blocks (or the
+rows and columns of a Latin square) and, if any, covariates. When `design` is
+not given, it is suggested from the roles.
+
+```{r}
+fit <- design_anova(maize_nitrogen, response = "Yield_t_ha", treatment = "Nitrogen_kg_ha",
+                    block = "Block")
+fit
+```
+
+The designs that can be analysed, and the roles each one needs, are listed by
+`designs()`:
+
+```{r}
+designs()[, c("id", "name")]
+```
+
+## 2. Assumptions
+
+`check_assumptions()` runs the usual checks on the residuals and summarises
+them in a grade from A (satisfied) to D (several assumptions fail).
+
+```{r}
+check_assumptions(fit)
+```
+
+Observation 16 has a studentized residual of 2.65; it is worth checking in the
+field book, but on its own it does not invalidate the analysis. The residual
+plots show the same picture:
+
+```{r, fig.height = 5.5}
+plot(fit)
+```
+
+When an assumption fails, `transformations()` compares the candidate
+transformations on the same model and suggests one, and `nonparametric()`
+offers rank-based alternatives. In the tomato factorial the block and
+treatment effects are multiplicative and the logarithm removes the problem:
+
+```{r}
+tom <- design_anova(tomato_factorial, "Yield_kg_plant", c("Variety", "Fertilizer"), block = "Block")
+transformations(tom)$verdict
+tom_log <- design_anova(tomato_factorial, "Yield_kg_plant", c("Variety", "Fertilizer"),
+                        block = "Block", transform = "log")
+check_assumptions(tom_log)$grade
+```
+
+## 3. Comparing the treatments
+
+`compare_means()` separates the least-squares means with one of eleven
+procedures and labels them with letters: means that share a letter do not
+differ.
+
+```{r}
+cmp <- compare_means(fit, "Nitrogen_kg_ha", method = "tukey")
+cmp
+```
+
+Nitrogen rates are quantitative, so the trend is more informative than the
+letters. `trend()` splits the sum of squares into orthogonal polynomial
+components and fits the curve:
+
+```{r}
+tr <- trend(fit, "Nitrogen_kg_ha")
+tr
+```
+
+Planned comparisons are tested with `test_contrasts()`:
+
+```{r}
+test_contrasts(fit, "Nitrogen_kg_ha", rbind("control vs fertilised" = c(3, -1, -1, -1),
+                                            "120 vs 180" = c(0, 0, 1, -1)))
+```
+
+## 4. Figures
+
+Every result has a `plot()` method, and `save_figure()` writes it at the size
+and resolution a journal asks for (PNG and TIFF carry the resolution in their
+header; PDF, SVG and EPS are vector formats).
+
+```{r}
+plot(cmp)
+plot(cmp, style = "box")
+plot(tr)
+```
+
+```r
+save_figure("figure1.tiff", plot(cmp), width = 8.5, height = 6.5, units = "cm", res = 600)
+```
+
+## 5. The report
+
+`design_report()` writes all of the above in one self-contained HTML file:
+a materials and methods paragraph, descriptive statistics, the assumption
+checks, the analysis of variance with a draft of the results, the means with
+their letters, trends, figures and appendices. Open it in a browser and print
+it to PDF from there.
+
+```r
+design_report(fit, "maize-report.html", title = "Nitrogen rates in maize",
+              authors = "A. Author", units = "t/ha")
+```
+
+## Where next
+
+* `vignette("designs", package = "AgriDesign")`: factorials, split-plots,
+  Latin and Graeco-Latin squares, incomplete blocks and covariates.
+* `vignette("planning", package = "AgriDesign")`: randomised layouts, field
+  books and the number of replicates.
+* `vignette("breeding", package = "AgriDesign")`: AMMI, stability, line x
+  tester, diallels and North Carolina designs.
+* `vignette("more-tests", package = "AgriDesign")`: further rank-based tests
+  and plant pathology tools.

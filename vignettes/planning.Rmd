@@ -1,0 +1,88 @@
+---
+title: "Planning an experiment"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Planning an experiment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(width = 100)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.6, dpi = 72, out.width = "100%")
+library(AgriDesign)
+```
+
+Before the trial: how many replicates, which design, and where each treatment
+goes in the field.
+
+## How many replicates?
+
+The number of replicates depends on the coefficient of variation expected (take
+it from earlier trials of the same crop and site) and on the smallest
+difference worth detecting. `power_design()` uses the noncentral t
+distribution with the error degrees of freedom of the design:
+
+```{r}
+pw <- power_design(cv = 12, diff = 15, t = 6, design = "rcbd")
+pw
+plot(pw)
+```
+
+Halving the coefficient of variation is worth as much as quadrupling the
+replicates: uniform land, plots of the right size, border rows and blocks laid
+across the gradient are usually cheaper than more plots.
+
+## Randomising the layout
+
+`make_design()` randomises sixteen designs. The randomisation is reproducible
+with `seed` and does not change the random state of the session.
+
+```{r}
+lay <- make_design("rcbd", trt = c("N0", "N60", "N120", "N180", "N240"), r = 4, seed = 2026)
+lay
+plot(lay)
+```
+
+Split-plots keep the main plots together and randomise inside them:
+
+```{r}
+sp <- make_design("split_rcbd", A = c("Drip", "Furrow"), B = paste0("V", 1:4), r = 3,
+                  seed = 2026, arrangement = "side", blocks_per_row = 3)
+plot(sp)
+```
+
+## Incomplete blocks
+
+With many entries, complete blocks become large and heterogeneous. Alpha
+designs split each replicate into small blocks; `make_design()` searches the
+alpha array with the highest efficiency factor, which `design_efficiency()`
+reports together with the upper bound of Patterson and Williams:
+
+```{r}
+al <- make_design("alpha", trt = 30, k = 5, r = 3, seed = 2026)
+design_efficiency(al)[c("E", "upper_bound")]
+```
+
+Balanced incomplete blocks, Youden squares, cyclic designs and square
+lattices are also available:
+
+```{r}
+design_efficiency(make_design("bib", trt = 7, k = 3, seed = 1))$E
+plot(make_design("youden", trt = 7, k = 3, seed = 1))
+```
+
+## The field book
+
+The field book has one row per plot, with the plot number, the field position,
+the block and the treatment. Add the columns of the responses to be measured,
+write it to CSV, and after the harvest it goes straight into `design_anova()`:
+
+```{r}
+book <- field_book(lay, c("Yield", "Height"))
+head(book)
+```
+
+```r
+field_book(lay, c("Yield", "Height"), file = "field-book.csv")
+```

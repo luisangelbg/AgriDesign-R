@@ -1,0 +1,123 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd: edit this file and knit it -->
+
+```{r, include = FALSE}
+options(width = 100)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.path = "man/figures/README-",
+                      fig.width = 7, fig.height = 4.4, dpi = 110, out.width = "80%")
+```
+
+# AgriDesign
+
+**Design and analysis of agricultural experiments in R.**
+
+AgriDesign plans and analyses field, greenhouse and laboratory experiments with
+the classical designs of agricultural research. It tests every term of an
+analysis of variance against the right error stratum, checks the assumptions,
+separates means with letters, draws publication figures, writes an HTML report
+and randomises field layouts. It also covers incomplete block designs with
+recovery of inter-block information, plant breeding analyses (AMMI, stability,
+line x tester, diallels, North Carolina designs) and plant pathology tools
+(AUDPC, AUDPS). It is written in base R only and depends on no other package.
+
+## Installation
+
+```r
+# development version
+# install.packages("remotes")
+remotes::install_github("luisangelbg/AgriDesign-R")
+```
+
+## A first analysis
+
+Maize yield under four nitrogen rates in a randomised complete block design:
+
+```{r anova}
+library(AgriDesign)
+fit <- design_anova(maize_nitrogen, "Yield_t_ha", "Nitrogen_kg_ha", block = "Block")
+fit
+```
+
+Are the assumptions met?
+
+```{r assumptions}
+check_assumptions(fit)
+```
+
+Which rates differ?
+
+```{r means}
+cmp <- compare_means(fit, "Nitrogen_kg_ha", method = "tukey")
+cmp
+plot(cmp)
+```
+
+The response to nitrogen is quadratic, with its maximum near 180 kg/ha:
+
+```{r trend}
+trend(fit, "Nitrogen_kg_ha")
+```
+
+A complete report, with a methods paragraph ready to adapt, the tables and the
+figures, in one HTML file:
+
+```r
+design_report(fit, "maize-report.html", title = "Nitrogen rates in maize", units = "t/ha")
+```
+
+## Split-plots and other multi-stratum designs
+
+Each term is tested against its own error: irrigation (main plots) against
+Error a, varieties and the interaction against Error b. Simple effects use the
+pooled error with Satterthwaite degrees of freedom:
+
+```{r split}
+sp <- design_anova(split_irrigation, "Yield_t_ha", c("Irrigation", "Variety"),
+                   block = "Block", design = "split_rcbd")
+sp
+compare_means(sp, "Irrigation", by = "Variety")
+```
+
+## Planning a trial
+
+```{r layout, fig.height = 5}
+lay <- make_design("alpha", trt = 20, k = 4, r = 2, seed = 2026, arrangement = "side")
+design_efficiency(lay)[c("E", "upper_bound")]
+plot(lay)
+power_design(cv = 12, diff = 15, t = 20)$replicates
+```
+
+## What is in the package
+
+| Area | Functions |
+|---|---|
+| Analysis of variance | `design_anova()` (16 designs, covariates, transformations), `ls_means()`, `designs()` |
+| Assumptions | `check_assumptions()`, `transformations()`, `box_cox()` |
+| Means | `compare_means()` (Tukey, LSD, Bonferroni, Sidak, Holm, Duncan, SNK, REGWQ, Scheffe, Dunnett, Games-Howell; simple effects), `waller_duncan()`, `trend()`, `test_contrasts()` |
+| Rank-based tests | `nonparametric()` (Kruskal-Wallis, Welch, Friedman, Scheirer-Ray-Hare, aligned ranks), `durbin_test()`, `waerden_test()`, `median_test()` |
+| Incomplete blocks | `recover_interblock()` (REML), `design_efficiency()` |
+| Planning | `make_design()` (16 designs), `field_book()`, `power_design()` |
+| Plant breeding | `ammi()`, `stability()`, `line_tester()`, `diallel()`, `nc_design()` |
+| Plant pathology | `audpc()`, `audps()`, `audpc_by_unit()`, `smith_index()`, `hatheway_size()` |
+| Figures and report | `plot()` methods, `plot_interaction()`, `plot_differences()`, `plot_cell_means()`, `plot_ss_partition()`, `plot_field()`, `save_figure()`, `design_report()` |
+
+## Validation
+
+Every statistic is compared with an independent implementation (base R,
+established packages, published examples and closed-form results) in the
+scripts of the `validation/` folder of the source repository. See the article
+*Validation* for the list of comparisons and for the differences found with
+other software.
+
+## Citation
+
+```{r cite, echo = FALSE, comment = ""}
+print(citation("AgriDesign"), style = "text")
+```
+
+## Licence
+
+GPL (>= 3)

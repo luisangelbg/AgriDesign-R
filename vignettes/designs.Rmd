@@ -1,0 +1,119 @@
+---
+title: "Analysing classical designs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analysing classical designs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(width = 100)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.4, dpi = 72, out.width = "100%")
+library(AgriDesign)
+```
+
+The model of a design is not only a list of terms: each term has to be tested
+against the variation of the experimental units to which it was applied. This
+vignette shows how AgriDesign handles that in the common designs of
+agricultural research.
+
+## Factorials
+
+All combinations of two or more factors, here three tomato varieties by three
+fertiliser levels in complete blocks:
+
+```{r}
+fit <- design_anova(tomato_factorial, "Yield_kg_plant", c("Variety", "Fertilizer"),
+                    block = "Block", transform = "log")
+fit
+```
+
+With a significant interaction, the main effects are averaged over levels that
+behave differently; compare one factor within each level of the other (simple
+effects):
+
+```{r}
+compare_means(fit, "Fertilizer", by = "Variety")
+plot_interaction(fit, "Fertilizer", "Variety")
+```
+
+Because the analysis was done on the log scale, the tables also report the
+back-transformed means.
+
+## Split-plots and strip-plots
+
+Irrigation systems are hard to apply to small plots, so they go on main plots;
+varieties go on sub-plots inside them. The main-plot factor is compared with
+the variation among main plots (Error a), the rest with the sub-plot error:
+
+```{r}
+sp <- design_anova(split_irrigation, "Yield_t_ha", c("Irrigation", "Variety"),
+                   block = "Block", design = "split_rcbd")
+sp
+```
+
+Compared as if it were a factorial in blocks, the F of irrigation would be
+inflated, because the sub-plot error is much smaller than the variation among
+main plots. Simple effects use the right error in each direction: Error b for
+varieties within an irrigation system, and the pooled error with
+Satterthwaite degrees of freedom for irrigation within a variety.
+
+```{r}
+compare_means(sp, "Variety", by = "Irrigation")$error$label
+compare_means(sp, "Irrigation", by = "Variety")$error
+plot(compare_means(sp, "Variety", by = "Irrigation"))
+plot_ss_partition(sp)
+```
+
+`design = "strip_rcbd"` (three error strata) and `"splitsplit_rcbd"` work in
+the same way.
+
+## Latin and Graeco-Latin squares
+
+Two blocking directions, rows and columns:
+
+```{r}
+lt <- design_anova(wheat_latin, "Yield_t_ha", "Treatment", row = "Row", col = "Column")
+lt$design
+plot_field(lt, value = "residuals")
+```
+
+A Graeco-Latin square adds a third blocking factor, given as `block`; a
+Youden square (an incomplete Latin square) is suggested when the columns do
+not hold every treatment.
+
+## Incomplete blocks
+
+When there are more treatments than plots in a block, the blocks are
+incomplete. The intra-block analysis adjusts the treatment means for the
+blocks:
+
+```{r}
+bib <- design_anova(bib_sorghum, "Yield_t_ha", "Hybrid", block = "Block")
+bib$design
+ls_means(bib, "Hybrid")[, c("Hybrid", "mean", "se")]
+```
+
+If the blocks are a random sample of field conditions, the block totals also
+carry information on the treatments. `recover_interblock()` estimates the
+block and error variances by REML and combines both sources:
+
+```{r}
+recover_interblock(bib)
+```
+
+Resolvable designs (alpha, lattice) are analysed with two block columns:
+replicate and block within replicate (`block = c("Rep", "Block")`).
+
+## Covariates
+
+A covariate measured on every plot (stand count, initial weight) enters with
+`covariate =`; the treatment means are then adjusted to its mean:
+
+```{r}
+d <- maize_nitrogen
+d$Stand <- c(58, 61, 63, 57, 60, 62, 59, 64, 55, 61, 60, 62, 63, 58, 59, 60)
+anc <- design_anova(d, "Yield_t_ha", "Nitrogen_kg_ha", block = "Block", covariate = "Stand")
+ls_means(anc, "Nitrogen_kg_ha")[, c("Nitrogen_kg_ha", "mean", "se", "raw_mean")]
+```

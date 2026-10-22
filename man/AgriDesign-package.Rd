@@ -18,6 +18,7 @@ to analyse one.
 Useful links:
 \itemize{
   \item \url{https://github.com/luisangelbg/AgriDesign-R}
+  \item \url{https://luisangelbg.github.io/AgriDesign-R/}
   \item Report bugs at \url{https://github.com/luisangelbg/AgriDesign-R/issues}
 }
 

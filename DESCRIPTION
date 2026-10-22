@@ -6,15 +6,23 @@ Authors@R:
            comment = c(ORCID = "0000-0001-8057-2583"))
 Description: Plans and analyses agricultural experiments with classical
     designs: completely randomised, randomised complete blocks (also
-    generalised), Latin squares, incomplete blocks, augmented designs,
+    generalised), Latin, Graeco-Latin and Youden squares, balanced,
+    cyclic, alpha and lattice incomplete blocks, augmented designs,
     factorials, split-plots, strip-plots, split-split-plots and nested
-    designs, with or without covariates. Each analysis of variance uses
-    the right error stratum for every term, reports least-squares means
-    and their standard errors, and checks the assumptions of the model.
-    The package is written in base R only and has no dependencies on
-    other packages.
+    designs, with or without covariates. Each analysis of variance tests
+    every term against its own error stratum; least-squares means are
+    separated with eleven multiple-comparison procedures and compact
+    letters, with simple effects, trends and contrasts. It checks the
+    assumptions, offers transformations and rank-based alternatives,
+    recovers inter-block information by restricted maximum likelihood,
+    randomises field layouts with field books and power calculations,
+    draws publication figures and writes HTML reports. It also includes
+    plant breeding analyses (AMMI, stability, line x tester, diallel and
+    North Carolina designs) and plant pathology tools (area under the
+    disease progress curve, soil heterogeneity). Only base R is used.
 License: GPL (>= 3)
-URL: https://github.com/luisangelbg/AgriDesign-R
+URL: https://github.com/luisangelbg/AgriDesign-R,
+    https://luisangelbg.github.io/AgriDesign-R/
 BugReports: https://github.com/luisangelbg/AgriDesign-R/issues
 Depends:
     R (>= 4.1.0)
@@ -24,7 +32,10 @@ Imports:
     stats,
     utils
 Suggests:
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

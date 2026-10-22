@@ -9,3 +9,7 @@
 ^pkgdown$
 ^LEEME\.md$
 ^Rplots\.pdf$
+^README\.Rmd$
+^\.github$
+^vignettes/articles$
+^README\.html$

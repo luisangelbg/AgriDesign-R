@@ -1,0 +1,76 @@
+---
+title: "Rank-based tests and plant pathology"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Rank-based tests and plant pathology}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(width = 100)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.4, dpi = 72, out.width = "100%")
+library(AgriDesign)
+```
+
+## When the assumptions fail
+
+`nonparametric()` picks the rank-based alternative that fits the design:
+Kruskal-Wallis for a completely randomised design, Friedman for complete
+blocks, Scheirer-Ray-Hare for two factors, the aligned rank transform for
+factorials in blocks, and Welch's ANOVA when only the variances differ.
+Ordinal scores, like disease severity, are a typical case:
+
+```{r}
+dz <- design_anova(disease_scores, "Severity_score", "Fungicide", block = "Block")
+np <- nonparametric(dz)
+np
+plot(np)
+```
+
+Further tests: Durbin's test for balanced incomplete blocks, the van der
+Waerden normal-scores test and Mood's median test.
+
+```{r}
+durbin_test(bib_sorghum, "Yield_t_ha", "Hybrid", "Block")$test
+waerden_test(bean_varieties, "Yield_kg_plot", "Variety")$test
+```
+
+## The Waller-Duncan test
+
+A Bayesian alternative to the multiple range tests: the critical difference
+adapts to the F of the treatments (large F, more liberal; small F, more
+conservative). The result works with `print()` and `plot()` like any other
+comparison:
+
+```{r}
+fit <- design_anova(maize_nitrogen, "Yield_t_ha", "Nitrogen_kg_ha", block = "Block")
+waller_duncan(fit, "Nitrogen_kg_ha")
+```
+
+## Disease progress
+
+The area under the disease progress curve (AUDPC) and its stairs version
+(AUDPS, which weighs the first and last assessments better) summarise an
+epidemic in one number per plot, ready for the analysis of variance:
+
+```{r}
+head(blight_progress)
+a <- audpc_by_unit(blight_progress, "Severity_pct", "Day", c("Block", "Treatment"))
+head(a)
+fa <- design_anova(a, "audps", "Treatment", block = "Block")
+compare_means(fa, "Treatment")
+```
+
+## Soil heterogeneity and plot size
+
+From a uniformity trial (one crop, no treatments, harvested in small basic
+units), Smith's law relates the variance per unit area to the plot size. The
+index b (between 0 and 1) measures how correlated neighbouring units are and
+gives the optimum plot size for a cost ratio:
+
+```{r}
+sm <- smith_index(uniformity_trial, cost_ratio = 2)
+sm
+plot(sm)
+```

@@ -1,0 +1,103 @@
+url: https://luisangelbg.github.io/AgriDesign-R/
+
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#2f7d4f"
+    link-color: "#256640"
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+
+articles:
+- title: Analysis
+  navbar: ~
+  contents:
+  - designs
+  - more-tests
+- title: Planning
+  navbar: ~
+  contents:
+  - planning
+- title: Plant breeding
+  navbar: ~
+  contents:
+  - breeding
+- title: About the package
+  navbar: ~
+  contents:
+  - articles/validation
+
+reference:
+- title: Analysis of variance
+  desc: Fit the model of a design and get its least-squares means.
+  contents:
+  - design_anova
+  - designs
+  - ls_means
+  - recover_interblock
+- title: Assumptions
+  contents:
+  - check_assumptions
+  - transformations
+  - box_cox
+- title: Comparing treatments
+  contents:
+  - compare_means
+  - waller_duncan
+  - waller_critical
+  - trend
+  - test_contrasts
+- title: Rank-based tests
+  contents:
+  - nonparametric
+  - durbin_test
+  - waerden_test
+  - median_test
+- title: Planning experiments
+  contents:
+  - make_design
+  - field_book
+  - design_efficiency
+  - power_design
+- title: Plant breeding
+  contents:
+  - ammi
+  - stability
+  - line_tester
+  - diallel
+  - nc_design
+- title: Plant pathology and plot size
+  contents:
+  - audpc
+  - audps
+  - audpc_by_unit
+  - smith_index
+  - hatheway_size
+- title: Figures and report
+  contents:
+  - starts_with("plot")
+  - save_figure
+  - agri_colors
+  - design_report
+- title: Example data
+  contents:
+  - maize_nitrogen
+  - maize_wide
+  - bean_varieties
+  - disease_scores
+  - tomato_factorial
+  - wheat_latin
+  - split_irrigation
+  - bib_sorghum
+  - blight_progress
+  - uniformity_trial
+  - maize_met
+  - maize_lxt
+  - maize_diallel
+  - nc_designs
+- title: Package
+  contents:
+  - AgriDesign-package

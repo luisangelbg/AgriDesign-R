@@ -1,0 +1,11 @@
+bibentry(
+  bibtype = "Manual",
+  title = "{AgriDesign}: Design and Analysis of Agricultural Experiments",
+  author = person("Luis Ángel", "Barrera-Guzmán", email = "lbarrerag@chapingo.mx",
+                  comment = c(ORCID = "0000-0001-8057-2583")),
+  year = "2026",
+  note = paste("R package version", meta$Version),
+  url = "https://github.com/luisangelbg/AgriDesign-R",
+  textVersion = paste0("Barrera-Guzmán, L. Á. (2026). AgriDesign: Design and Analysis of Agricultural Experiments. ",
+                       "R package version ", meta$Version, ". https://github.com/luisangelbg/AgriDesign-R")
+)

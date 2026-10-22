@@ -1,0 +1,71 @@
+---
+title: "Plant breeding analyses"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Plant breeding analyses}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(width = 100)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 5, dpi = 72, out.width = "100%")
+library(AgriDesign)
+```
+
+The data sets of this vignette are simulated maize trials shipped with the
+package.
+
+## Genotype x environment interaction: AMMI
+
+Twelve hybrids in six environments with three blocks each:
+
+```{r}
+am <- ammi(maize_met, "Yield_t_ha", "Hybrid", "Environment", block = "Block")
+am
+```
+
+The AMMI2 biplot shows which hybrids interact with which environments; points
+near the origin are stable:
+
+```{r}
+plot(am, type = "ammi2")
+```
+
+## Stability
+
+`stability()` gathers the classical stability statistics: Eberhart and
+Russell's regression, Finlay and Wilkinson, Shukla's stability variance,
+Wricke's ecovalence, Kang's yield-stability statistic and Huehn's
+nonparametric measures.
+
+```{r}
+st <- stability(maize_met, "Yield_t_ha", "Hybrid", "Environment", block = "Block")
+st
+```
+
+## Line x tester
+
+```{r}
+lt <- line_tester(maize_lxt, "Yield_t_ha", "Line", "Tester", block = "Block")
+lt
+```
+
+## Diallel crosses
+
+Griffing's four methods (with or without parents and reciprocals), with the
+general and specific combining abilities and their standard errors:
+
+```{r}
+dl <- diallel(maize_diallel, "Yield_t_ha", "Female", "Male", block = "Block", method = 4)
+dl
+```
+
+## North Carolina designs
+
+Designs I, II and III estimate the additive and dominance variances from the
+analysis of variance of the progenies:
+
+```{r}
+nc_design(nc_designs$nc2, "Yield_t_ha", "Male", "Female", block = "Rep", set = "Set", design = 2)
+```
