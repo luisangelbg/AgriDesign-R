@@ -237,6 +237,9 @@ compare_means <- function(fit, factor, method = "tukey", alpha = 0.05, control =
          else fit$strata[[lsm$error]]
   res <- .run_compare(fit, lsm, err, lsm$error == "Residuals", method, alpha, control)
   res$factor <- factor; res$by <- NULL
+  res$obs <- data.frame(label = if (length(factor) == 1) as.character(fit$data[[factor]])
+                                else do.call(paste, c(lapply(fit$data[factor], as.character), sep = " x ")),
+                        y = fit$y, stringsAsFactors = FALSE)
   res
 }
 
@@ -307,7 +310,9 @@ compare_means <- function(fit, factor, method = "tukey", alpha = 0.05, control =
                  pairs = do.call(rbind, lapply(slices, `[[`, "pairs")),
                  msd = first$msd, note = first$note, method = method, method_name = first$method_name,
                  alpha = alpha, error = first$error, response = fit$response, transform = fit$transform,
-                 factor = factor, by = by),
+                 factor = factor, by = by,
+                 obs = data.frame(label = as.character(fit$data[[factor]]), by = as.character(fit$data[[by]]),
+                                  y = fit$y, stringsAsFactors = FALSE)),
             class = "ad_comparison")
 }
 
@@ -446,6 +451,7 @@ trend <- function(fit, factor, degree = NULL, alpha = 0.05) {
     attr(opt, "kind") <- if (b[3] < 0) "maximum" else "minimum"
   }
   structure(list(components = comp, significant_degree = deg, coef = b, r_squared = r2, optimum = opt,
+                 means = data.frame(x = x, mean = lsm$means$mean, se = lsm$means$se, n = lsm$means$n),
                  range = range(x), factor = factor, response = fit$response, error = err, alpha = alpha),
             class = "ad_trend")
 }
