@@ -48,6 +48,18 @@
     name = "Latin square",
     factors = c(1, 1), blocks = c(0, 0), need_row_col = TRUE,
     build = function(r, o) c(.cov_terms(r), list(.term(r$row), .term(r$col), .term(r$treatment[1])))),
+  graeco = list(
+    name = "Graeco-Latin square",
+    factors = c(1, 1), blocks = c(1, 1), need_row_col = TRUE,
+    build = function(r, o) c(.cov_terms(r), list(.term(r$row), .term(r$col), .term(r$block[1]), .term(r$treatment[1])))),
+  youden = list(
+    name = "Youden square (incomplete Latin square), intra-block analysis",
+    factors = c(1, 1), blocks = c(0, 0), need_row_col = TRUE,
+    build = function(r, o) c(.cov_terms(r), list(.term(r$row), .term(r$col), .term(r$treatment[1])))),
+  bib = list(
+    name = "Incomplete blocks without replicate grouping (BIBD, cyclic), intra-block analysis",
+    factors = c(1, 1), blocks = c(1, 1),
+    build = function(r, o) c(.cov_terms(r), list(.term(r$block[1]), .term(r$treatment[1])))),
   ibd = list(
     name = "Incomplete block design (lattice, alpha, BIBD), intra-block analysis",
     factors = c(1, 1), blocks = c(2, 2),
@@ -163,8 +175,12 @@ designs <- function() {
     if (isTRUE(d$need_reps) && nb >= d$blocks[1] && !multi) why <- c(why, "needs several plots per block x treatment")
     data.frame(id = id, ok = !length(why), why = paste(why, collapse = "; "), stringsAsFactors = FALSE)
   })
-  sug <- if (!is.null(r$row) && !is.null(r$col) && nf == 1) "latin"
-         else if (nf == 1) { if (nb == 0) "crd" else if (nb >= 2) "ibd" else if (multi) "grcbd" else "rcbd" }
+  incomplete <- function(b) nf == 1 && any(table(data[[b]], data[[r$treatment[1]]]) == 0)
+  sug <- if (!is.null(r$row) && !is.null(r$col) && nf == 1) {
+           if (nb == 1) "graeco" else if (incomplete(r$col)) "youden" else "latin"
+         }
+         else if (nf == 1) { if (nb == 0) "crd" else if (nb >= 2) "ibd" else if (multi) "grcbd"
+                             else if (incomplete(r$block[1])) "bib" else "rcbd" }
          else if (nb) "fact_rcbd" else "fact_crd"
   list(table = do.call(rbind, chk), suggested = sug)
 }

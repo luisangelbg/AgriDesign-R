@@ -174,8 +174,15 @@
   })
 
 # Skeleton ANOVA (sources and degrees of freedom) of each generated design.
-.skeleton <- function(design, t, r, a, b, cc, k, nc) {
+.skeleton <- function(design, t, r, a, b, cc, k, nc, nb = 0) {
   rows <- switch(design,
+    graeco = list(c("Rows", t - 1), c("Columns", t - 1), c("Greek letters", t - 1), c("Treatments", t - 1),
+                  c("Error", (t - 1) * (t - 3))),
+    youden = list(c("Rows", k - 1), c("Columns (blocks)", t - 1), c("Treatments (adjusted)", t - 1),
+                  c("Error", t * k - 1 - (k - 1) - 2 * (t - 1))),
+    bib = , cyclic = list(c("Blocks", nb - 1), c("Treatments (adjusted)", t - 1), c("Intra-block error", nb * k - nb - t + 1)),
+    alpha = , lattice = list(c("Replicates", r - 1), c("Blocks within replicates", r * (t / k - 1)),
+                             c("Treatments (adjusted)", t - 1), c("Intra-block error", (r - 1) * (t - 1) - r * (t / k - 1))),
     crd = list(c("Treatments", t - 1), c("Error", t * (r - 1))),
     rcbd = list(c("Blocks", r - 1), c("Treatments", t - 1), c("Error", (r - 1) * (t - 1))),
     latin = list(c("Rows", t - 1), c("Columns", t - 1), c("Treatments", t - 1), c("Error", (t - 1) * (t - 2))),
@@ -199,7 +206,8 @@
                c("Treatments (adjusted)", t - 1), c("Intra-block error", (r - 1) * (t - 1) - r * (t / k - 1))),
     augmented = list(c("Blocks", r - 1), c("Checks", nc - 1), c("Error (from checks)", (r - 1) * (nc - 1))))
   out <- data.frame(source = vapply(rows, `[`, "", 1), df = as.numeric(vapply(rows, `[`, "", 2)), stringsAsFactors = FALSE)
-  n <- switch(design, latin = t * t, fact_crd = , fact_rcbd = a * b * max(cc, 1) * r, split_rcbd = , strip = a * b * r,
+  n <- switch(design, latin = , graeco = t * t, youden = t * k, bib = , cyclic = nb * k,
+              fact_crd = , fact_rcbd = a * b * max(cc, 1) * r, split_rcbd = , strip = a * b * r,
               splitsplit = a * b * cc * r, t * r)
   if (design != "augmented") out <- rbind(out, data.frame(source = "Total", df = n - 1))
   out
@@ -210,7 +218,10 @@
                 split_rcbd = "Split-plot in RCBD", strip = "Strip-plot (split-block) in RCBD",
                 splitsplit = "Split-split-plot in RCBD",
                 ibd = "Resolvable incomplete blocks (random blocks of size k within replicates)",
-                augmented = "Augmented design (checks in every block + unreplicated entries)")
+                augmented = "Augmented design (checks in every block + unreplicated entries)",
+                graeco = "Graeco-Latin square", youden = "Youden square",
+                bib = "Balanced incomplete block design (BIBD)", cyclic = "Cyclic incomplete block design",
+                alpha = "Alpha design (resolvable incomplete blocks)", lattice = "Square lattice")
 
 #' Randomise a field experiment
 #'
@@ -228,6 +239,18 @@
 #' `k`) and `"augmented"` (`checks` in every block and each of the
 #' `entries` once).
 #'
+#' Further designs: `"graeco"` (Graeco-Latin square: rows, columns, a
+#' second blocking factor `greek` and the treatments, for an odd number of
+#' treatments or 4 or 8), `"youden"` (incomplete Latin square: `k` rows and
+#' as many columns as treatments, from a cyclic difference set), `"bib"`
+#' (balanced incomplete blocks of size `k`: cyclic when a difference set is
+#' known, otherwise all combinations), `"cyclic"` (incomplete blocks
+#' developed from initial blocks chosen for the highest efficiency; `r` a
+#' multiple of `k`), `"alpha"` (alpha design: resolvable, `t / k` blocks of
+#' size `k` per replicate, with the alpha array of highest efficiency found)
+#' and `"lattice"` (square lattice: `k^2` treatments in blocks of `k`).
+#' [design_efficiency()] reports the efficiency factor of the layout.
+#'
 #' @param design Design identifier, see Details.
 #' @param trt Treatment names, or a single number of treatments (named T1,
 #'   T2...).
@@ -235,6 +258,7 @@
 #' @param A,B,C Levels of the factors of factorial and split designs.
 #' @param k Block size of incomplete block designs.
 #' @param checks,entries Checks and new entries of an augmented design.
+#' @param greek Levels of the second blocking factor of a Graeco-Latin square.
 #' @param seed Seed of the randomisation; `NULL` draws one and reports it.
 #' @param serpentine Number the plots in serpentine order (back and forth
 #'   along the field rows).
@@ -258,14 +282,19 @@
 #' make_design("split_rcbd", A = c("Drip", "Furrow"), B = paste0("V", 1:4), r = 3, seed = 1)
 #' @export
 make_design <- function(design = names(.generated), trt = NULL, r = 3, A = NULL, B = NULL, C = NULL, k = NULL,
-                        checks = NULL, entries = NULL, seed = NULL, serpentine = TRUE,
+                        checks = NULL, entries = NULL, greek = NULL, seed = NULL, serpentine = TRUE,
                         numbering = c("sequential", "block"), arrangement = c("stacked", "side"),
                         blocks_per_row = 2, plots_per_row = NULL, gap = FALSE) {
   design <- match.arg(design); numbering <- match.arg(numbering); arrangement <- match.arg(arrangement)
   if (is.numeric(trt) && length(trt) == 1) trt <- paste0("T", seq_len(trt))
   if (!is.null(trt)) trt <- as.character(trt)
   need <- function(x, what, n = 2) if (length(x) < n) stop(design, " needs ", what, call. = FALSE)
-  if (design %in% c("crd", "rcbd", "latin", "ibd")) need(unique(trt), "at least two treatments in 'trt'")
+  if (design %in% c("crd", "rcbd", "latin", "ibd", "graeco", "youden", "bib", "cyclic", "alpha", "lattice"))
+    need(unique(trt), "at least two treatments in 'trt'")
+  if (design %in% c("youden", "bib", "cyclic", "alpha", "lattice") && (is.null(k) || k < 2 || k >= length(trt)))
+    stop("give a block size 'k' between 2 and the number of treatments - 1", call. = FALSE)
+  if (design == "lattice" && length(trt) != k^2) stop("a square lattice needs k^2 treatments", call. = FALSE)
+  if (design == "graeco" && is.null(greek)) greek <- paste0("g", seq_along(trt))
   if (design %in% c("fact_crd", "fact_rcbd", "split_rcbd", "strip", "splitsplit")) { need(A, "two or more levels of 'A'"); need(B, "two or more levels of 'B'") }
   if (design == "splitsplit") need(C, "two or more levels of 'C'")
   if (design == "ibd" && (is.null(k) || k < 2 || k >= length(trt))) stop("give a block size 'k' between 2 and the number of treatments - 1", call. = FALSE)
@@ -273,14 +302,16 @@ make_design <- function(design = names(.generated), trt = NULL, r = 3, A = NULL,
     if (length(intersect(checks, entries))) stop("checks and entries must have different names", call. = FALSE) }
   if (any(duplicated(trt)) || any(duplicated(A)) || any(duplicated(B)) || any(duplicated(C)))
     stop("treatment and level names must be unique", call. = FALSE)
-  if (design != "latin" && r < 2) stop("'r' must be at least 2", call. = FALSE)
+  if (!design %in% c("latin", "graeco", "youden", "bib") && r < 2) stop("'r' must be at least 2", call. = FALSE)
   if (is.null(seed)) seed <- sample.int(99999, 1)
-  o <- list(trt = trt, r = r, A = A, B = B, C = C, k = k, checks = checks, entries = entries, plots_per_row = plots_per_row)
+  o <- list(trt = trt, r = r, A = A, B = B, C = C, k = k, checks = checks, entries = entries, plots_per_row = plots_per_row,
+            greek = as.character(greek), lattice = design == "lattice")
   if (design %in% c("fact_crd", "fact_rcbd")) {
     g <- expand.grid(A = A, B = B, C = if (length(C)) C else NA, stringsAsFactors = FALSE)
     o$trt <- do.call(paste, c(g[if (length(C)) 1:3 else 1:2], sep = " x "))
   }
-  gen <- switch(design, fact_crd = .gen$crd, fact_rcbd = .gen$rcbd, split_rcbd = .gen$split, .gen[[design]])
+  gen <- switch(design, fact_crd = .gen$crd, fact_rcbd = .gen$rcbd, split_rcbd = .gen$split, lattice = .gen_extra$alpha,
+                c(.gen, .gen_extra)[[design]])
   L <- .with_seed(seed, .arrange(gen(o), arrangement, blocks_per_row, gap))
   p <- L$plots
   if (design %in% c("fact_crd", "fact_rcbd")) {
@@ -299,16 +330,20 @@ make_design <- function(design = names(.generated), trt = NULL, r = 3, A = NULL,
   book <- data.frame(Plot = p$Plot, stringsAsFactors = FALSE)
   if (any(!is.na(p$rep))) book$Block <- p$rep
   if ("IncBlock" %in% names(p)) book$IncBlock <- p$IncBlock
-  if (design == "latin") { book$Row <- p$Row; book$Column <- p$Column }
+  if (design %in% c("latin", "graeco", "youden")) { book$Row <- p$Row; book$Column <- p$Column }
+  if (design == "graeco") book$Greek <- p$Greek
   book$FieldRow <- p$FieldRow; book$FieldCol <- p$FieldCol
   if ("A" %in% names(p) && any(!is.na(p$A))) { book$A <- p$A; book$B <- p$B; if (length(C)) book$C <- p$C }
   book$Treatment <- p$trt
   if ("Type" %in% names(p)) book$Type <- p$Type
   rownames(book) <- NULL
   nt <- if (design == "augmented") length(checks) + length(entries) else length(unique(book$Treatment))
-  skel <- .skeleton(design, length(o$trt), r, length(A), length(B), length(C), if (is.null(k)) 0 else k, length(checks))
+  nb <- if ("IncBlock" %in% names(book)) length(unique(paste(book$Block, book$IncBlock)))
+        else if ("Block" %in% names(book)) length(unique(book$Block)) else 0
+  reps <- if (design %in% c("latin", "graeco", "youden", "bib", "cyclic")) round(nrow(book) / length(unique(book$Treatment))) else r
+  skel <- .skeleton(design, length(o$trt), reps, length(A), length(B), length(C), if (is.null(k)) 0 else k, length(checks), nb)
   structure(list(book = book, boxes = L$boxes, skeleton = skel, design = design, design_name = .generated[[design]],
-                 seed = seed, r = if (design == "latin") length(trt) else r, treatments = nt,
+                 seed = seed, r = reps, treatments = nt,
                  size = c(rows = max(book$FieldRow), cols = max(book$FieldCol))),
             class = "ad_layout")
 }
@@ -377,7 +412,8 @@ plot.ad_layout <- function(x, color_by = NULL, labels = TRUE, numbers = TRUE, ma
   graphics::rect(b$FieldCol - 0.47, b$FieldRow - 0.47, b$FieldCol + 0.47, b$FieldRow + 0.47, col = fill, border = "#ffffff")
   cx <- min(1, 9 / max(nchar(as.character(b$Treatment))))
   if (labels) graphics::text(b$FieldCol, b$FieldRow + if (numbers) 0.12 else 0,
-                             if (x$design %in% c("split_rcbd", "splitsplit")) b[[if (x$design == "split_rcbd") "B" else "C"]] else b$Treatment,
+                             if (x$design %in% c("split_rcbd", "splitsplit")) b[[if (x$design == "split_rcbd") "B" else "C"]]
+                             else if (x$design == "graeco") paste(b$Treatment, b$Greek) else b$Treatment,
                              cex = 0.8 * cx, font = 2, col = "#1b1b1b")
   if (numbers) graphics::text(b$FieldCol - 0.4, b$FieldRow - 0.4, b$Plot, adj = c(0, 1), cex = 0.6, col = "#5f6368")
   bx <- x$boxes

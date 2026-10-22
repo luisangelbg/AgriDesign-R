@@ -83,5 +83,5 @@ test_that("roles that do not fit the design are refused with a clear message", {
   expect_error(design_anova(maize_nitrogen, "Yield", "Nitrogen_kg_ha"), "not found")
   expect_error(design_anova(maize_nitrogen, "Yield_t_ha", "Nitrogen_kg_ha", design = "xyz"),
                "unknown design")
-  expect_equal(nrow(designs()), 13)
+  expect_equal(nrow(designs()), 16)
 })

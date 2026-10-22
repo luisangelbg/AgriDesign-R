@@ -14,6 +14,7 @@ make_design(
   k = NULL,
   checks = NULL,
   entries = NULL,
+  greek = NULL,
   seed = NULL,
   serpentine = TRUE,
   numbering = c("sequential", "block"),
@@ -36,6 +37,8 @@ T2...).}
 \item{k}{Block size of incomplete block designs.}
 
 \item{checks, entries}{Checks and new entries of an augmented design.}
+
+\item{greek}{Levels of the second blocking factor of a Graeco-Latin square.}
 
 \item{seed}{Seed of the randomisation; \code{NULL} draws one and reports it.}
 
@@ -75,6 +78,18 @@ sub-plots), \code{"strip"} (\code{A} in horizontal and \code{B} in vertical stri
 into blocks of \code{k} plots; the number of treatments must be a multiple of
 \code{k}) and \code{"augmented"} (\code{checks} in every block and each of the
 \code{entries} once).
+
+Further designs: \code{"graeco"} (Graeco-Latin square: rows, columns, a
+second blocking factor \code{greek} and the treatments, for an odd number of
+treatments or 4 or 8), \code{"youden"} (incomplete Latin square: \code{k} rows and
+as many columns as treatments, from a cyclic difference set), \code{"bib"}
+(balanced incomplete blocks of size \code{k}: cyclic when a difference set is
+known, otherwise all combinations), \code{"cyclic"} (incomplete blocks
+developed from initial blocks chosen for the highest efficiency; \code{r} a
+multiple of \code{k}), \code{"alpha"} (alpha design: resolvable, \code{t / k} blocks of
+size \code{k} per replicate, with the alpha array of highest efficiency found)
+and \code{"lattice"} (square lattice: \code{k^2} treatments in blocks of \code{k}).
+\code{\link[=design_efficiency]{design_efficiency()}} reports the efficiency factor of the layout.
 }
 \examples{
 lay <- make_design("rcbd", trt = c("N0", "N60", "N120", "N180"), r = 4, seed = 2026)
