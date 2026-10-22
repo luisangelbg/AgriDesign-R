@@ -15,7 +15,8 @@ design_anova(
   design = NULL,
   ss_type = 3,
   random_blocks = TRUE,
-  random_nested = TRUE
+  random_nested = TRUE,
+  transform = NULL
 )
 }
 \arguments{
@@ -45,6 +46,10 @@ treatments against the block x treatment interaction.}
 
 \item{random_nested}{In a nested design, treat the inner factor as random
 and test the outer factor against it.}
+
+\item{transform}{Optional transformation of the response before the
+analysis, by its identifier in \code{\link[=transformations]{transformations()}} (\code{"log"}, \code{"sqrt"},
+\code{"asin"}...). Means are then also reported back-transformed.}
 }
 \value{
 An object of class \code{"ad_anova"}: a list with the ANOVA table

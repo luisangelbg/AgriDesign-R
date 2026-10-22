@@ -74,6 +74,9 @@
 #'   treatments against the block x treatment interaction.
 #' @param random_nested In a nested design, treat the inner factor as random
 #'   and test the outer factor against it.
+#' @param transform Optional transformation of the response before the
+#'   analysis, by its identifier in [transformations()] (`"log"`, `"sqrt"`,
+#'   `"asin"`...). Means are then also reported back-transformed.
 #' @return An object of class `"ad_anova"`: a list with the ANOVA table
 #'   (`table`), the error strata (`strata`), the grand mean, the coefficient
 #'   of variation, R squared, the fitted model and the data used.
@@ -87,12 +90,21 @@
 #' @export
 design_anova <- function(data, response, treatment, block = NULL, row = NULL, col = NULL,
                          covariate = NULL, design = NULL, ss_type = 3,
-                         random_blocks = TRUE, random_nested = TRUE) {
+                         random_blocks = TRUE, random_nested = TRUE, transform = NULL) {
   if (!is.data.frame(data)) stop("'data' must be a data frame", call. = FALSE)
   if (!ss_type %in% c(1, 3)) stop("'ss_type' must be 1 or 3", call. = FALSE)
   r <- list(treatment = treatment, block = block, row = row, col = col, covariate = covariate)
   mf <- .model_frame(data, response, r)
   d <- mf$data
+  tr <- NULL
+  if (!is.null(transform)) {
+    L <- .transform_list(d[[response]])
+    if (!transform %in% names(L))
+      stop("transformation '", transform, "' does not suit this response; possible: ",
+           paste(names(L), collapse = ", "), call. = FALSE)
+    d[[response]] <- L[[transform]]$f(d[[response]])
+    tr <- list(id = transform, label = L[[transform]]$label, inv = L[[transform]]$inv)
+  }
   app <- .applicable(r, d)
   if (is.null(design)) design <- app$suggested
   if (!design %in% names(.catalog)) stop("unknown design '", design, "'; see designs()", call. = FALSE)
@@ -154,7 +166,7 @@ design_anova <- function(data, response, treatment, block = NULL, row = NULL, co
     design = design, design_name = dsg$name, response = response, roles = r,
     terms = terms, formula = fml, model_terms = tt, ss_type = ss_type,
     grand_mean = gm, cv = sqrt(mse) / gm * 100, r_squared = 1 - full$sse / sst,
-    n = length(y), dropped = mf$dropped,
+    n = length(y), dropped = mf$dropped, transform = tr,
     X = X, y = y, qr_fit = full$fit, data = d),
     class = "ad_anova")
 }
@@ -168,7 +180,8 @@ design_anova <- function(data, response, treatment, block = NULL, row = NULL, co
 #' @export
 print.ad_anova <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
   cat("\n", x$design_name, "\n", sep = "")
-  cat("Response: ", x$response, "   (n = ", x$n,
+  cat("Response: ", x$response, if (!is.null(x$transform)) paste0(", transformed: ", x$transform$label),
+      "   (n = ", x$n,
       if (x$dropped) paste0(", ", x$dropped, " incomplete row(s) dropped"), ")\n", sep = "")
   cat("Type ", if (x$ss_type == 1) "I" else "III", " sums of squares\n\n", sep = "")
   t <- x$table
@@ -212,6 +225,14 @@ print.ad_anova <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 #' @export
 ls_means <- function(fit, factors) {
   if (!inherits(fit, "ad_anova")) stop("'fit' must come from design_anova()", call. = FALSE)
+  out <- .lsm(fit, factors)$means
+  if (!is.null(fit$transform)) out$back_transformed <- fit$transform$inv(out$mean)
+  out
+}
+
+# Least-squares means with the averaged design rows (`xbar`, one row per mean) and
+# (X'X)^-1 on the estimable columns, needed for the SE of differences and contrasts.
+.lsm <- function(fit, factors) {
   d <- fit$data
   facs <- names(d)[vapply(d, is.factor, NA)]
   bad <- setdiff(factors, facs)
@@ -237,19 +258,28 @@ ls_means <- function(fit, factors) {
     sel <- rep(TRUE, nrow(d))
     for (f in factors) sel <- sel & d[[f]] == target[i, f]
     obs <- fit$y[sel]
-    data.frame(target[i, , drop = FALSE],
-               mean = sum(xbar * beta),
-               se = sqrt(max(0, drop(t(xbar) %*% XtXi %*% xbar)) * mse),
-               n = length(obs),
-               raw_mean = if (length(obs)) mean(obs) else NA_real_,
-               sd = if (length(obs) > 1) stats::sd(obs) else NA_real_,
-               stringsAsFactors = FALSE, row.names = NULL)
+    list(row = data.frame(target[i, , drop = FALSE],
+                          mean = sum(xbar * beta),
+                          se = sqrt(max(0, drop(t(xbar) %*% XtXi %*% xbar)) * mse),
+                          n = length(obs),
+                          raw_mean = if (length(obs)) mean(obs) else NA_real_,
+                          sd = if (length(obs) > 1) stats::sd(obs) else NA_real_,
+                          stringsAsFactors = FALSE, row.names = NULL),
+         xbar = xbar)
   })
-  out <- do.call(rbind, out)
+  means <- do.call(rbind, lapply(out, `[[`, "row"))
+  xb <- do.call(rbind, lapply(out, `[[`, "xbar"))
   # a term tested against a higher stratum: SE from that stratum (balanced formula)
-  if (length(factors) == 1) {
-    e <- fit$table$error[fit$table$term == factors]
-    if (length(e) && e != "Residuals") out$se <- sqrt(fit$strata[[e]]$ms / out$n)
-  }
-  out
+  e <- .error_of(fit, factors)
+  if (e != "Residuals") means$se <- sqrt(fit$strata[[e]]$ms / means$n)
+  means$label <- if (length(factors) == 1) as.character(means[[factors]])
+                 else do.call(paste, c(means[factors], sep = " x "))
+  list(means = means, xbar = xb, XtXi = XtXi, error = e)
+}
+
+# Error stratum that tests the term made of `factors` (Residuals when it is not in the model).
+.error_of <- function(fit, factors) {
+  hit <- vapply(fit$terms, function(t) setequal(t$factors, factors) && !length(t$numeric), NA)
+  if (!any(hit)) return("Residuals")
+  fit$terms[[which(hit)[1]]]$error
 }
