@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd: edit this file and knit it -->
 
-# AgriDesign
+# AgriDesign <img src="man/figures/logo.png" align="right" height="139" alt="AgriDesign hexagon logo: a field trial laid out as a Latin square with a maize plant growing from it" />
 
 **Design and analysis of agricultural experiments in R.**
 
@@ -200,7 +200,7 @@ power_design(cv = 12, diff = 15, t = 20)$replicates
 | Means | `compare_means()` (Tukey, LSD, Bonferroni, Sidak, Holm, Duncan, SNK, REGWQ, Scheffe, Dunnett, Games-Howell; simple effects), `waller_duncan()`, `trend()`, `test_contrasts()` |
 | Rank-based tests | `nonparametric()` (Kruskal-Wallis, Welch, Friedman, Scheirer-Ray-Hare, aligned ranks), `durbin_test()`, `waerden_test()`, `median_test()` |
 | Incomplete blocks | `recover_interblock()` (REML), `design_efficiency()` |
-| Planning | `make_design()` (16 designs), `field_book()`, `power_design()` |
+| Planning | `make_design()` (16 designs, listed by `designs("layout")`), `field_book()`, `power_design()` |
 | Plant breeding | `ammi()`, `stability()`, `line_tester()`, `diallel()`, `nc_design()` |
 | Plant pathology | `audpc()`, `audps()`, `audpc_by_unit()`, `smith_index()`, `hatheway_size()` |
 | Figures and report | `plot()` methods, `plot_interaction()`, `plot_differences()`, `plot_cell_means()`, `plot_ss_partition()`, `plot_field()`, `save_figure()`, `design_report()` |

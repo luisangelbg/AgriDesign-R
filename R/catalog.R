@@ -137,14 +137,81 @@
     })
 )
 
-#' List the experimental designs that can be analysed
+#' List the designs that can be analysed or randomised
 #'
-#' @return A data frame with the identifier of each design (the value to pass
-#'   to `design =` in [design_anova()]), its name and the roles it needs.
+#' `designs()` lists the 16 designs that [design_anova()] analyses;
+#' `designs("layout")` lists the 16 designs that [make_design()] randomises,
+#' with the arguments each one needs and the design to give to
+#' [design_anova()] once the responses are in the field book.
+#'
+#' Designs analysed by [design_anova()] (`design =`):
+#'
+#' | id | Design | Roles |
+#' |----|--------|-------|
+#' | `crd` | Completely randomised | treatment |
+#' | `rcbd` | Randomised complete blocks | treatment, block |
+#' | `grcbd` | Generalised RCBD (replicates within blocks) | treatment, block |
+#' | `latin` | Latin square | treatment, row, col |
+#' | `graeco` | Graeco-Latin square | treatment, row, col, block (Greek letters) |
+#' | `youden` | Youden square | treatment, row, col |
+#' | `bib` | Incomplete blocks (BIBD, cyclic) | treatment, block |
+#' | `ibd` | Resolvable incomplete blocks (lattice, alpha) | treatment, block = c(rep, block) |
+#' | `augmented` | Augmented (checks and new entries) | treatment, block |
+#' | `fact_crd` | Factorial in CRD (2 to 4 factors) | treatment = c(A, B, ...) |
+#' | `fact_rcbd` | Factorial in RCBD (2 to 4 factors) | treatment = c(A, B, ...), block |
+#' | `split_rcbd` | Split-plot in RCBD | treatment = c(main, sub), block |
+#' | `split_crd` | Split-plot in CRD | treatment = c(main, sub), block (replicate) |
+#' | `strip_rcbd` | Strip-plot (split-block) | treatment = c(A, B), block |
+#' | `splitsplit_rcbd` | Split-split-plot in RCBD | treatment = c(main, sub, sub-sub), block |
+#' | `nested` | Nested (hierarchical) | treatment = c(outer, inner) |
+#'
+#' Designs randomised by [make_design()] (first argument; `C` is optional in
+#' factorials, and the conditions on the number of treatments and the block
+#' size are in the `conditions` column of `designs("layout")`):
+#'
+#' | id | Design | Arguments | Analyse as |
+#' |----|--------|-----------|------------|
+#' | `crd` | Completely randomised | `trt`, `r` | `crd` |
+#' | `rcbd` | Randomised complete blocks | `trt`, `r` | `rcbd` |
+#' | `latin` | Latin square | `trt` | `latin` |
+#' | `graeco` | Graeco-Latin square | `trt`, `greek` | `graeco` |
+#' | `youden` | Youden square | `trt`, `k` | `youden` |
+#' | `bib` | Balanced incomplete blocks | `trt`, `k` | `bib` |
+#' | `cyclic` | Cyclic incomplete blocks | `trt`, `k`, `r` | `bib` |
+#' | `ibd` | Resolvable incomplete blocks | `trt`, `k`, `r` | `ibd` |
+#' | `alpha` | Alpha design | `trt`, `k`, `r` | `ibd` |
+#' | `lattice` | Square lattice | `trt`, `k`, `r` | `ibd` |
+#' | `augmented` | Augmented | `checks`, `entries`, `r` | `augmented` |
+#' | `fact_crd` | Factorial in CRD | `A`, `B`, `C`, `r` | `fact_crd` |
+#' | `fact_rcbd` | Factorial in RCBD | `A`, `B`, `C`, `r` | `fact_rcbd` |
+#' | `split_rcbd` | Split-plot in RCBD | `A`, `B`, `r` | `split_rcbd` |
+#' | `strip` | Strip-plot | `A`, `B`, `r` | `strip_rcbd` |
+#' | `splitsplit` | Split-split-plot | `A`, `B`, `C`, `r` | `splitsplit_rcbd` |
+#'
+#' @param type `"analysis"` (designs of [design_anova()]) or `"layout"`
+#'   (designs of [make_design()]).
+#' @return A data frame. For `"analysis"`: the identifier of each design (the
+#'   value to pass to `design =` in [design_anova()]), its name, the number of
+#'   treatment factors and block columns, and whether it needs rows and
+#'   columns. For `"layout"`: the identifier (the first argument of
+#'   [make_design()]), its name, the arguments it needs (in parentheses when
+#'   optional), its conditions and the design of [design_anova()] that
+#'   analyses its field book.
 #' @examples
 #' designs()
+#' designs("layout")
+#'
+#' # the layout reports the call that analyses it
+#' make_design("strip", A = c("Drip", "Furrow"), B = c("V1", "V2", "V3"), r = 3, seed = 1)$analysis
 #' @export
-designs <- function() {
+designs <- function(type = c("analysis", "layout")) {
+  if (match.arg(type) == "layout") {
+    id <- names(.generated)
+    return(data.frame(id = id, name = unname(.generated), needs = unname(.layout_needs[id]),
+                      conditions = unname(.layout_conditions[id]),
+                      analyse_as = vapply(id, function(d) sub('.*design = "([a-z_]+)".*', "\\1", .analysis_call(d)), ""),
+                      row.names = NULL, stringsAsFactors = FALSE))
+  }
   data.frame(
     id = names(.catalog),
     name = vapply(.catalog, `[[`, "", "name"),

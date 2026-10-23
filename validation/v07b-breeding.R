@@ -4,7 +4,7 @@
 # carolina), base R fits (lm / anova, svd), lme4 (REML components of balanced
 # data) and the closed formulas of the original papers. agricolae's data sets
 # are used here only; they are not shipped with AgriDesign.
-# Where the reference uses another convention, or is wrong, the check
+# Where the reference uses another convention or formula, the check
 # confirms which formula it applies and a NOTE explains the difference.
 suppressMessages({ library(agricolae); library(lme4) })
 suppressMessages(devtools::load_all(quiet = TRUE))   # nc_design() does not clash with agricolae::carolina()
@@ -204,7 +204,7 @@ for (kn in list(c(3, 3), c(4, 3), c(5, 4))) {
   cat(sprintf("      agricolae's Var(S1) would be %.6f (exact %.6f)\n", ((K^2 - 4) * (N + 3) + 30) / (45 * N * (N - 1)), ex[["V1"]]))
 }
 note("Huehn's Var(S1): the exact null distribution confirms Nassar and Huehn's (K^2-1)[(K^2-4)(N+3)+30]/(45K^2N(N-1));",
-     "agricolae drops (K^2-1)/K^2, so its Var(S1) is too large by K^2/(K^2-1) and its Z1 slightly too small.")
+     "agricolae uses Var(S1) without (K^2-1)/K^2, so the two Var(S1) differ by K^2/(K^2-1) and Z1 slightly.")
 st05 <- stability(longStb, "y", "G", "E", mse = 1.8, df_error = dfeS, reps = 4, method = "huehn", alpha = 0.05)
 chk("Huehn critical chi-square (each Z with Bonferroni, sum) vs agricolae (alpha 0.05)", st05$huehn$critical,
     unlist(hs[c("chi.ind", "chi.sum")]), 1e-4)
@@ -309,16 +309,16 @@ chk("AgriDesign Cov HS (average) = [wavg - MSlt] (l+t-2) / (r(2lt - l - t))  (mo
 chk("AgriDesign Cov HS (average) = d.f.-weighted mean of the two moment estimators",
     lt$components$estimate[3], ((l - 1) * t * lt$components$estimate[1] + (t - 1) * l * lt$components$estimate[2]) /
       ((l - 1) * t + (t - 1) * l))
-note("agricolae's Cov HS (average) misses the factor (l + t - 2) of the weighted mean square: it gives",
+note("agricolae's Cov HS (average) uses the weighted mean square without the factor (l + t - 2): it gives",
      signif(after("Cov H.S. (average)"), 5), "although Cov HS of lines and testers are", signif(lt$components$estimate[1], 5),
      "and", signif(lt$components$estimate[2], 5), "; E[((l-1)MSl + (t-1)MSt)/(l+t-2)] = Ve + r Vlt + r (2lt-l-t)/(l+t-2) Cov HS,",
-     "so AgriDesign gives", signif(lt$components$estimate[3], 5), "(it lies between the two, as it must). agricolae is wrong.")
+     "so AgriDesign gives", signif(lt$components$estimate[3], 5), "(it lies between the two, as the expectations require).")
 chk("agricolae Cov FS = sum of (MS - MSe) / 3r, without the Cov HS terms",
     ((Ml - Me) + (Mt - Me) + (Mlt - Me)) / (3 * r), after("Cov F.S. (average)"), 1e-5)
 chk("AgriDesign Cov FS = [sum (MS - MSe) + 6r CovHS - r(l+t) CovHS] / 3r (Singh-Chaudhary)", lt$components$estimate[4],
     ((Ml - Me) + (Mt - Me) + (Mlt - Me) + (6 * r - r * (l + t)) * lt$components$estimate[3]) / (3 * r))
-note("agricolae's Cov FS drops the term (6r - r(l+t)) Cov HS of Singh and Chaudhary's formula; with sigma2_l = sigma2_t = Cov HS",
-     "the expectations give Cov FS = 2 Cov HS + sigma2_lt, which AgriDesign reproduces. agricolae is wrong.")
+note("agricolae's Cov FS does not include the term (6r - r(l+t)) Cov HS of Singh and Chaudhary's formula; with sigma2_l = sigma2_t = Cov HS",
+     "the expectations give Cov FS = 2 Cov HS + sigma2_lt, which AgriDesign reproduces.")
 chk("agricolae sigma2_A (F = 0, 1) = 4 Cov HS / (1 + F) with its own Cov HS", c(4, 2) * after("Cov H.S. (average)"),
     c(after("F = 0, Adittive genetic variance"), after("F = 1, Adittive genetic variance")), 1e-5)
 s2sca <- (Mlt - Me) / r
@@ -485,8 +485,8 @@ chk("agricolae NC II var.m = (MSm - MSmf) / (r x total number of females)", ag2$
 chk("agricolae NC II var.f = (MSf - MSmf) / (r x total number of males)", ag2$var.f,
     (a2["set:female", "Mean Sq"] - a2["set:male:female", "Mean Sq"]) / (3 * length(unique(c2$male))))
 note("NC II: E(MS males within sets) = Ve + r Vmf + r f Vm with f = females per set (", mf2, "); agricolae divides by the",
-     "number of female labels in the whole data (", length(unique(c2$female)), "), so with sets its Vm and Vf (and var.Am, var.Af)",
-     "are too small by the number of sets. agricolae is wrong when there are several sets.")
+     "number of female labels in the whole data (", length(unique(c2$female)), "); the two agree with a single set and",
+     "differ by the number of sets when there are several.")
 c3 <- DC$carolina3
 invisible(capture.output(ag3 <- agricolae::carolina(model = 3, c3)))
 nc3 <- nc_design(c3, "yield", "male", "female", block = "rep", set = "set", design = 3)
@@ -503,8 +503,8 @@ chk("AgriDesign NC III sigma2_D = Vmt", nc3$genetic$estimate[2], nc3$components$
 note("NC III: with an F2 male crossed to both parents, one locus gives backcross sums (a+d, d, d-a) and differences",
      "(a-d, a, a+d) with frequencies 1/4, 1/2, 1/4: Var(sum) = a^2/2 = sigma2_A and Var(difference) = d^2/2 = 2 sigma2_D.",
      "The interaction mean square has expectation Ve + r Var(difference)/2 = Ve + r sigma2_D, so sigma2_D = (MSmt - MSe)/r = Vmt.",
-     "agricolae doubles it (var.D = 2 var.mi); the factor 2 belongs to the definition Vmt = Var of one interaction effect,",
-     "whose coefficient would then be 2r, not r. agricolae overestimates sigma2_D by a factor of 2.")
+     "agricolae reports var.D = 2 var.mi, which corresponds to defining Vmt as the variance of one interaction effect,",
+     "with coefficient 2r instead of r; under the model above the two estimates differ by a factor of 2.")
 # design III on an exactly enumerated F2: two loci, the 16 gamete combinations (frequencies 1:2:1 at each locus),
 # no error; the sample variances (divisor n - 1) are 16/15 of the population ones
 aa <- c(0.30, 0.20); dd3 <- c(0.25, -0.10)
@@ -514,7 +514,7 @@ sim <- expand.grid(Tester = c("P1", "P2"), Male = seq_len(16), Rep = 1:2, string
 sim$y <- ifelse(sim$Tester == "P1", fam1[sim$Male], fam2[sim$Male]) + c(0.1, -0.1)[sim$Rep]
 n3 <- nc_design(sim, "y", "Male", "Tester", block = "Rep", design = 3)
 chk("NC III exact F2 (2 loci): sigma2_A x 15/16 = sum(a^2)/2", n3$genetic$estimate[1] * 15 / 16, sum(aa^2) / 2)
-chk("NC III exact F2: sigma2_D x 15/16 = sum(d^2)/4 (agricolae's 2 Vmt would double it)", n3$genetic$estimate[2] * 15 / 16,
+chk("NC III exact F2: sigma2_D x 15/16 = sum(d^2)/4 (2 Vmt would give twice this value)", n3$genetic$estimate[2] * 15 / 16,
     sum(dd3^2) / 4)
 # REML of balanced data equals the moment estimators when every component is positive
 for (k in 1:3) {

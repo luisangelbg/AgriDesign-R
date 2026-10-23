@@ -37,8 +37,19 @@ test_that("the seed reproduces the layout and leaves the session random state al
 test_that("Jacobson-Matthews squares are Latin and reach every square of order 4", {
   is_latin <- function(m) all(apply(m, 1, anyDuplicated) == 0) && all(apply(m, 2, anyDuplicated) == 0)
   for (t in c(2, 3, 5, 7, 10)) expect_true(is_latin(AgriDesign:::.with_seed(t, AgriDesign:::.latin_square(t))))
-  sq <- vapply(1:4000, function(s) paste(make_design("latin", trt = 4, seed = s)$book$Treatment, collapse = ""), "")
-  expect_gt(length(unique(sq)), 432)
+  # Permuting a cyclic square of order 4 gives only the 432 squares with 4
+  # intercalates (2 x 2 Latin subsquares); the other 144 have 12. A uniform
+  # draw gives these with probability 1/4 (the full uniformity test is in
+  # validation/v05-generator.R).
+  intercalates <- function(m) {
+    n <- 0
+    for (i in 1:3) for (k in (i + 1):4) for (j in 1:3) for (l in (j + 1):4)
+      n <- n + (m[i, j] == m[k, l] && m[i, l] == m[k, j])
+    n
+  }
+  ni <- vapply(1:80, function(s) intercalates(AgriDesign:::.with_seed(s, AgriDesign:::.latin_square(4))), 0)
+  expect_setequal(unique(ni), c(4, 12))
+  expect_gt(mean(ni == 12), 0.1)
 })
 
 test_that("the field book goes straight into design_anova with the skeleton df", {
@@ -67,4 +78,29 @@ test_that("bad requests are refused with clear messages", {
   expect_error(make_design("split_rcbd", A = "a1", B = c("b1", "b2")), "levels of 'A'")
   expect_error(make_design("augmented", checks = c("C1", "C2"), entries = c("C1", "E2")), "different names")
   expect_error(make_design("rcbd", trt = 4, r = 1), "at least 2")
+})
+
+test_that("designs('layout') lists every generated design and its analysis runs on the field book", {
+  lay_tab <- designs("layout")
+  expect_equal(nrow(lay_tab), 16)
+  expect_true(all(lay_tab$analyse_as %in% designs()$id))
+  args <- list(crd = list(trt = 4), rcbd = list(trt = 4), latin = list(trt = 4),
+               fact_crd = list(A = c("a1", "a2"), B = c("b1", "b2", "b3")),
+               fact_rcbd = list(A = c("a1", "a2"), B = c("b1", "b2"), C = c("c1", "c2")),
+               split_rcbd = list(A = c("a1", "a2"), B = c("b1", "b2", "b3")),
+               strip = list(A = c("a1", "a2", "a3"), B = c("b1", "b2", "b3")),
+               splitsplit = list(A = c("a1", "a2"), B = c("b1", "b2"), C = c("c1", "c2")),
+               ibd = list(trt = 6, k = 3), augmented = list(checks = c("C1", "C2", "C3"), entries = paste0("E", 1:8)),
+               graeco = list(trt = 5), youden = list(trt = 7, k = 3), bib = list(trt = 7, k = 3),
+               cyclic = list(trt = 6, k = 3, r = 3), alpha = list(trt = 12, k = 3), lattice = list(trt = 9, k = 3))
+  expect_setequal(names(args), lay_tab$id)
+  for (d in names(args)) {
+    lay <- do.call(make_design, c(list(d, seed = 11), args[[d]]))
+    data <- lay$book
+    data$response <- stats::rnorm(nrow(data), 10)
+    fit <- eval(parse(text = lay$analysis))
+    expect_s3_class(fit, "ad_anova")
+    expect_equal(fit$design, lay_tab$analyse_as[lay_tab$id == d], info = d)
+  }
+  expect_output(print(make_design("rcbd", trt = 3, r = 2, seed = 1)), 'design = "rcbd"')
 })

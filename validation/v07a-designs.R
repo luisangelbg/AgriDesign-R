@@ -58,8 +58,8 @@ for (p in list(c(12, 3, 2), c(20, 4, 2), c(20, 4, 3), c(30, 5, 3), c(24, 4, 2), 
   E_true <- .efficiency(bk[[4]], paste(bk$replication, bk$block))$E   # column 4: the treatments
   E_printed <- ag$statistics$Efficiency
   lay <- make_design("alpha", trt = t, k = k, r = r, seed = 1); e <- design_efficiency(lay)
-  # agricolae prints the Patterson-Williams upper bound as "Efficiency factor", not the efficiency of its layout
-  chk(sprintf("alpha t=%d k=%d r=%d: agricolae prints the upper bound (%.4f), its layout has E = %.4f", t, k, r, E_printed, E_true),
+  # agricolae reports the Patterson-Williams upper bound as "Efficiency factor"; the layout itself is evaluated here
+  chk(sprintf("alpha t=%d k=%d r=%d: agricolae reports the upper bound (%.4f); its layout has E = %.4f", t, k, r, E_printed, E_true),
       near(E_printed, e$upper_bound, 1e-6) && E_true <= E_printed + 1e-9)
   chk(sprintf("alpha t=%d k=%d r=%d: ours %.4f >= agricolae's layout %.4f, <= bound %.4f", t, k, r, e$E, E_true, e$upper_bound),
       e$E >= E_true - 1e-9 && e$E <= e$upper_bound + 1e-9)

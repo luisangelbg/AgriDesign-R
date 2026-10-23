@@ -15,12 +15,16 @@ First public release.
 * `check_assumptions()`, `transformations()`, `box_cox()`, `nonparametric()`,
   `durbin_test()`, `waerden_test()` and `median_test()`.
 * `recover_interblock()`: combined intra- and inter-block analysis by REML.
+* `residuals()`, `fitted()`, `nobs()` and `anova()` methods for fitted designs, and
+  `as.data.frame()` for mean comparisons.
 
 ## Planning
 
 * `make_design()` randomises 16 designs (uniform Latin squares by the
   Jacobson-Matthews chain; alpha and cyclic designs searched for the highest
   efficiency), `field_book()`, `design_efficiency()` and `power_design()`.
+  `designs("layout")` lists the designs with the arguments each one needs,
+  and every layout reports the `design_anova()` call that analyses it.
 
 ## Plant breeding and pathology
 

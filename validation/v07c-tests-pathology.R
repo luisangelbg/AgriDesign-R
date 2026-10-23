@@ -86,7 +86,7 @@ print(dis, row.names = FALSE, digits = 5)
 sel <- dis[c(1, 6, 8, 9, 16, 24), ]
 sel$double_integral <- mapply(function(q, f, Fv) bf_t(100, q, f, Fv), sel$q, sel$f, sel$F)
 chk("6 of these cells: AgriDesign = independent double integral", sel$mine, sel$double_integral, 1e-6)
-note("agricolae is off by up to %.3f there: its Waller-Kemp series is inexact for q = 1 and for large F", max(abs(sel$agricolae - sel$double_integral)))
+note("agricolae differs by up to %.3f there (its Waller-Kemp series approximation, for q = 1 and for large F)", max(abs(sel$agricolae - sel$double_integral)))
 
 # (e) waller.test on agricolae's sweetpotato (CRD, 4 viruses x 3): q = 3, f = 8, F = 17.34
 cat("\n--- waller_duncan() vs waller.test ---\n")
@@ -190,9 +190,9 @@ ppc <- vapply(seq_len(nrow(mt$pairs)), function(q) {
   suppressWarnings(chisq.test(table(yy > median(yy), droplevels(cn$m[s])), correct = TRUE)$p.value) }, 0)
 chk("corn: Yates-corrected pairwise p vs chisq.test(correct = TRUE)", mtc$pairs$p, ppc, 1e-10)
 mag_c <- Median.test(cn$y, cn$m, correct = TRUE, console = FALSE, group = FALSE)$comparison$pvalue
-note("agricolae Median.test(correct = TRUE) p = %s equal the UNcorrected ones: chisq.test(B, correct, ...) passes 'correct' as 'y'",
+note("agricolae 1.3-7 Median.test(correct = TRUE) p = %s equal the uncorrected ones (the 'correct' argument is not passed by name to chisq.test)",
      paste(head(mag_c, 3), collapse = " "))
-chk("agricolae's 'corrected' pairwise p = uncorrected chi-square (its bug)", mag_c, round(pp, 4), 1e-12)
+chk("agricolae 1.3-7 pairwise p with correct = TRUE = uncorrected chi-square", mag_c, round(pp, 4), 1e-12)
 mte <- median_test(cn, "y", "m", p_adjust = "none", exact = TRUE)
 pe <- vapply(seq_len(nrow(mt$pairs)), function(q) {
   s <- cn$m %in% c(mt$pairs$level_i[q], mt$pairs$level_j[q]); yy <- cn$y[s]

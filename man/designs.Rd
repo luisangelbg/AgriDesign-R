@@ -2,17 +2,77 @@
 % Please edit documentation in R/catalog.R
 \name{designs}
 \alias{designs}
-\title{List the experimental designs that can be analysed}
+\title{List the designs that can be analysed or randomised}
 \usage{
-designs()
+designs(type = c("analysis", "layout"))
+}
+\arguments{
+\item{type}{\code{"analysis"} (designs of \code{\link[=design_anova]{design_anova()}}) or \code{"layout"}
+(designs of \code{\link[=make_design]{make_design()}}).}
 }
 \value{
-A data frame with the identifier of each design (the value to pass
-to \verb{design =} in \code{\link[=design_anova]{design_anova()}}), its name and the roles it needs.
+A data frame. For \code{"analysis"}: the identifier of each design (the
+value to pass to \verb{design =} in \code{\link[=design_anova]{design_anova()}}), its name, the number of
+treatment factors and block columns, and whether it needs rows and
+columns. For \code{"layout"}: the identifier (the first argument of
+\code{\link[=make_design]{make_design()}}), its name, the arguments it needs (in parentheses when
+optional), its conditions and the design of \code{\link[=design_anova]{design_anova()}} that
+analyses its field book.
 }
 \description{
-List the experimental designs that can be analysed
+\code{designs()} lists the 16 designs that \code{\link[=design_anova]{design_anova()}} analyses;
+\code{designs("layout")} lists the 16 designs that \code{\link[=make_design]{make_design()}} randomises,
+with the arguments each one needs and the design to give to
+\code{\link[=design_anova]{design_anova()}} once the responses are in the field book.
+}
+\details{
+Designs analysed by \code{\link[=design_anova]{design_anova()}} (\verb{design =}):\tabular{lll}{
+   id \tab Design \tab Roles \cr
+   \code{crd} \tab Completely randomised \tab treatment \cr
+   \code{rcbd} \tab Randomised complete blocks \tab treatment, block \cr
+   \code{grcbd} \tab Generalised RCBD (replicates within blocks) \tab treatment, block \cr
+   \code{latin} \tab Latin square \tab treatment, row, col \cr
+   \code{graeco} \tab Graeco-Latin square \tab treatment, row, col, block (Greek letters) \cr
+   \code{youden} \tab Youden square \tab treatment, row, col \cr
+   \code{bib} \tab Incomplete blocks (BIBD, cyclic) \tab treatment, block \cr
+   \code{ibd} \tab Resolvable incomplete blocks (lattice, alpha) \tab treatment, block = c(rep, block) \cr
+   \code{augmented} \tab Augmented (checks and new entries) \tab treatment, block \cr
+   \code{fact_crd} \tab Factorial in CRD (2 to 4 factors) \tab treatment = c(A, B, ...) \cr
+   \code{fact_rcbd} \tab Factorial in RCBD (2 to 4 factors) \tab treatment = c(A, B, ...), block \cr
+   \code{split_rcbd} \tab Split-plot in RCBD \tab treatment = c(main, sub), block \cr
+   \code{split_crd} \tab Split-plot in CRD \tab treatment = c(main, sub), block (replicate) \cr
+   \code{strip_rcbd} \tab Strip-plot (split-block) \tab treatment = c(A, B), block \cr
+   \code{splitsplit_rcbd} \tab Split-split-plot in RCBD \tab treatment = c(main, sub, sub-sub), block \cr
+   \code{nested} \tab Nested (hierarchical) \tab treatment = c(outer, inner) \cr
+}
+
+
+Designs randomised by \code{\link[=make_design]{make_design()}} (first argument; \code{C} is optional in
+factorials, and the conditions on the number of treatments and the block
+size are in the \code{conditions} column of \code{designs("layout")}):\tabular{llll}{
+   id \tab Design \tab Arguments \tab Analyse as \cr
+   \code{crd} \tab Completely randomised \tab \code{trt}, \code{r} \tab \code{crd} \cr
+   \code{rcbd} \tab Randomised complete blocks \tab \code{trt}, \code{r} \tab \code{rcbd} \cr
+   \code{latin} \tab Latin square \tab \code{trt} \tab \code{latin} \cr
+   \code{graeco} \tab Graeco-Latin square \tab \code{trt}, \code{greek} \tab \code{graeco} \cr
+   \code{youden} \tab Youden square \tab \code{trt}, \code{k} \tab \code{youden} \cr
+   \code{bib} \tab Balanced incomplete blocks \tab \code{trt}, \code{k} \tab \code{bib} \cr
+   \code{cyclic} \tab Cyclic incomplete blocks \tab \code{trt}, \code{k}, \code{r} \tab \code{bib} \cr
+   \code{ibd} \tab Resolvable incomplete blocks \tab \code{trt}, \code{k}, \code{r} \tab \code{ibd} \cr
+   \code{alpha} \tab Alpha design \tab \code{trt}, \code{k}, \code{r} \tab \code{ibd} \cr
+   \code{lattice} \tab Square lattice \tab \code{trt}, \code{k}, \code{r} \tab \code{ibd} \cr
+   \code{augmented} \tab Augmented \tab \code{checks}, \code{entries}, \code{r} \tab \code{augmented} \cr
+   \code{fact_crd} \tab Factorial in CRD \tab \code{A}, \code{B}, \code{C}, \code{r} \tab \code{fact_crd} \cr
+   \code{fact_rcbd} \tab Factorial in RCBD \tab \code{A}, \code{B}, \code{C}, \code{r} \tab \code{fact_rcbd} \cr
+   \code{split_rcbd} \tab Split-plot in RCBD \tab \code{A}, \code{B}, \code{r} \tab \code{split_rcbd} \cr
+   \code{strip} \tab Strip-plot \tab \code{A}, \code{B}, \code{r} \tab \code{strip_rcbd} \cr
+   \code{splitsplit} \tab Split-split-plot \tab \code{A}, \code{B}, \code{C}, \code{r} \tab \code{splitsplit_rcbd} \cr
+}
 }
 \examples{
 designs()
+designs("layout")
+
+# the layout reports the call that analyses it
+make_design("strip", A = c("Drip", "Furrow"), B = c("V1", "V2", "V3"), r = 3, seed = 1)$analysis
 }

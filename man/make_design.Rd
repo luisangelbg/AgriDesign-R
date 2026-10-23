@@ -25,7 +25,10 @@ make_design(
 )
 }
 \arguments{
-\item{design}{Design identifier, see Details.}
+\item{design}{Design identifier: one of \code{"crd"}, \code{"rcbd"}, \code{"latin"},
+\code{"fact_crd"}, \code{"fact_rcbd"}, \code{"split_rcbd"}, \code{"strip"}, \code{"splitsplit"},
+\code{"ibd"}, \code{"augmented"}, \code{"graeco"}, \code{"youden"}, \code{"bib"}, \code{"cyclic"},
+\code{"alpha"} or \code{"lattice"} (see Details and \code{designs("layout")}).}
 
 \item{trt}{Treatment names, or a single number of treatments (named T1,
 T2...).}
@@ -70,6 +73,11 @@ of variance. The randomisation is reproducible with \code{seed} and does not
 change the random state of the session.
 }
 \details{
+The table of the designs, with the arguments each one needs and the
+design of \code{\link[=design_anova]{design_anova()}} that analyses its field book, is in
+\code{\link[=designs]{designs()}}; \code{designs("layout")} returns it as a data frame. Printing
+the layout shows the call that analyses it (also in \verb{$analysis}).
+
 Designs: \code{"crd"}, \code{"rcbd"}, \code{"latin"} (as many rows and columns as
 treatments), \code{"fact_crd"} and \code{"fact_rcbd"} (all combinations of \code{A},
 \code{B} and optionally \code{C}), \code{"split_rcbd"} (\code{A} on main plots, \code{B} on
@@ -87,15 +95,22 @@ as many columns as treatments, from a cyclic difference set), \code{"bib"}
 known, otherwise all combinations), \code{"cyclic"} (incomplete blocks
 developed from initial blocks chosen for the highest efficiency; \code{r} a
 multiple of \code{k}), \code{"alpha"} (alpha design: resolvable, \code{t / k} blocks of
-size \code{k} per replicate, with the alpha array of highest efficiency found)
+size \code{k} per replicate, \code{k <= t / k}, with the alpha array of highest
+efficiency found)
 and \code{"lattice"} (square lattice: \code{k^2} treatments in blocks of \code{k}).
 \code{\link[=design_efficiency]{design_efficiency()}} reports the efficiency factor of the layout.
 }
 \examples{
+designs("layout")   # the designs that can be randomised
+
 lay <- make_design("rcbd", trt = c("N0", "N60", "N120", "N180"), r = 4, seed = 2026)
 lay
 head(lay$book)
 plot(lay)
 
 make_design("split_rcbd", A = c("Drip", "Furrow"), B = paste0("V", 1:4), r = 3, seed = 1)
+}
+\seealso{
+\code{\link[=designs]{designs()}} for the table of designs, \code{\link[=field_book]{field_book()}},
+\code{\link[=design_efficiency]{design_efficiency()}}, \code{\link[=power_design]{power_design()}}.
 }

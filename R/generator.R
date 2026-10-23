@@ -223,12 +223,44 @@
                 bib = "Balanced incomplete block design (BIBD)", cyclic = "Cyclic incomplete block design",
                 alpha = "Alpha design (resolvable incomplete blocks)", lattice = "Square lattice")
 
+# What each generated design needs, its conditions and the analysis of its field book.
+.layout_needs <- c(crd = "trt, r", rcbd = "trt, r", latin = "trt", fact_crd = "A, B (C), r", fact_rcbd = "A, B (C), r",
+                   split_rcbd = "A, B, r", strip = "A, B, r", splitsplit = "A, B, C, r", ibd = "trt, k, r",
+                   augmented = "checks, entries, r", graeco = "trt (greek)", youden = "trt, k", bib = "trt, k",
+                   cyclic = "trt, k, r", alpha = "trt, k, r", lattice = "trt, k, r")
+.layout_conditions <- c(
+  crd = "", rcbd = "", latin = "rows = columns = number of treatments",
+  fact_crd = "all combinations of the levels", fact_rcbd = "all combinations of the levels in every block",
+  split_rcbd = "A on main plots, B on sub-plots", strip = "A in horizontal strips, B in vertical strips",
+  splitsplit = "A on main plots, B on sub-plots, C on sub-sub-plots",
+  ibd = "treatments a multiple of k; each replicate split at random into blocks of k",
+  augmented = "checks in every block, each entry once", graeco = "odd number of treatments, or 4 or 8",
+  youden = "k rows, as many columns as treatments", bib = "every pair of treatments together equally often",
+  cyclic = "r a multiple of k", alpha = "treatments a multiple of k and k <= treatments / k",
+  lattice = "treatments = k^2")
+
+.analysis_call <- function(design, has_C = FALSE) {
+  trt <- if (design %in% c("fact_crd", "fact_rcbd", "split_rcbd", "strip", "splitsplit")) {
+    if (design == "splitsplit" || has_C) 'c("A", "B", "C")' else 'c("A", "B")'
+  } else '"Treatment"'
+  roles <- switch(design, crd = , fact_crd = "", latin = , youden = ', row = "Row", col = "Column"',
+                  graeco = ', row = "Row", col = "Column", block = "Greek"',
+                  ibd = , alpha = , lattice = ', block = c("Block", "IncBlock")', ', block = "Block"')
+  id <- switch(design, strip = "strip_rcbd", splitsplit = "splitsplit_rcbd", cyclic = "bib", alpha = , lattice = "ibd", design)
+  sprintf('design_anova(data, "response", %s%s, design = "%s")', trt, roles, id)
+}
+
 #' Randomise a field experiment
 #'
 #' Generates the randomised layout of a classical design, numbers the plots
 #' and returns the field book (one row per plot) with the skeleton analysis
 #' of variance. The randomisation is reproducible with `seed` and does not
 #' change the random state of the session.
+#'
+#' The table of the designs, with the arguments each one needs and the
+#' design of [design_anova()] that analyses its field book, is in
+#' [designs()]; `designs("layout")` returns it as a data frame. Printing
+#' the layout shows the call that analyses it (also in `$analysis`).
 #'
 #' Designs: `"crd"`, `"rcbd"`, `"latin"` (as many rows and columns as
 #' treatments), `"fact_crd"` and `"fact_rcbd"` (all combinations of `A`,
@@ -247,11 +279,15 @@
 #' known, otherwise all combinations), `"cyclic"` (incomplete blocks
 #' developed from initial blocks chosen for the highest efficiency; `r` a
 #' multiple of `k`), `"alpha"` (alpha design: resolvable, `t / k` blocks of
-#' size `k` per replicate, with the alpha array of highest efficiency found)
+#' size `k` per replicate, `k <= t / k`, with the alpha array of highest
+#' efficiency found)
 #' and `"lattice"` (square lattice: `k^2` treatments in blocks of `k`).
 #' [design_efficiency()] reports the efficiency factor of the layout.
 #'
-#' @param design Design identifier, see Details.
+#' @param design Design identifier: one of `"crd"`, `"rcbd"`, `"latin"`,
+#'   `"fact_crd"`, `"fact_rcbd"`, `"split_rcbd"`, `"strip"`, `"splitsplit"`,
+#'   `"ibd"`, `"augmented"`, `"graeco"`, `"youden"`, `"bib"`, `"cyclic"`,
+#'   `"alpha"` or `"lattice"` (see Details and `designs("layout")`).
 #' @param trt Treatment names, or a single number of treatments (named T1,
 #'   T2...).
 #' @param r Number of replicates (blocks).
@@ -273,7 +309,11 @@
 #' @return An object of class `"ad_layout"` with the field book (`book`),
 #'   the outlines of blocks and main plots (`boxes`), the skeleton ANOVA
 #'   (`skeleton`) and the seed used.
+#' @seealso [designs()] for the table of designs, [field_book()],
+#'   [design_efficiency()], [power_design()].
 #' @examples
+#' designs("layout")   # the designs that can be randomised
+#'
 #' lay <- make_design("rcbd", trt = c("N0", "N60", "N120", "N180"), r = 4, seed = 2026)
 #' lay
 #' head(lay$book)
@@ -343,7 +383,7 @@ make_design <- function(design = names(.generated), trt = NULL, r = 3, A = NULL,
   reps <- if (design %in% c("latin", "graeco", "youden", "bib", "cyclic")) round(nrow(book) / length(unique(book$Treatment))) else r
   skel <- .skeleton(design, length(o$trt), reps, length(A), length(B), length(C), if (is.null(k)) 0 else k, length(checks), nb)
   structure(list(book = book, boxes = L$boxes, skeleton = skel, design = design, design_name = .generated[[design]],
-                 seed = seed, r = reps, treatments = nt,
+                 seed = seed, r = reps, treatments = nt, analysis = .analysis_call(design, length(C) > 0),
                  size = c(rows = max(book$FieldRow), cols = max(book$FieldCol))),
             class = "ad_layout")
 }
@@ -357,6 +397,7 @@ print.ad_layout <- function(x, ...) {
   err <- x$skeleton$df[grepl("^(Error|Intra)", x$skeleton$source)]
   if (length(err) && min(err) < 10) cat("Note: fewer than 10 error degrees of freedom; consider more replicates.\n")
   cat("\nField book (first rows):\n"); print(utils::head(x$book, 8), row.names = FALSE)
+  if (!is.null(x$analysis)) cat("\nAnalysis, once the responses are in the field book:\n  ", x$analysis, "\n", sep = "")
   invisible(x)
 }
 

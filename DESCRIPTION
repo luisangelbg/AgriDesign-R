@@ -6,20 +6,28 @@ Authors@R:
            comment = c(ORCID = "0000-0001-8057-2583"))
 Description: Plans and analyses agricultural experiments with classical
     designs: completely randomised, randomised complete blocks (also
-    generalised), Latin, Graeco-Latin and Youden squares, balanced,
-    cyclic, alpha and lattice incomplete blocks, augmented designs,
-    factorials, split-plots, strip-plots, split-split-plots and nested
-    designs, with or without covariates. Each analysis of variance tests
-    every term against its own error stratum; least-squares means are
-    separated with eleven multiple-comparison procedures and compact
-    letters, with simple effects, trends and contrasts. It checks the
-    assumptions, offers transformations and rank-based alternatives,
-    recovers inter-block information by restricted maximum likelihood,
-    randomises field layouts with field books and power calculations,
-    draws publication figures and writes HTML reports. It also includes
-    plant breeding analyses (AMMI, stability, line x tester, diallel and
-    North Carolina designs) and plant pathology tools (area under the
-    disease progress curve, soil heterogeneity). Only base R is used.
+    generalised), Latin, Graeco-Latin and Youden squares, balanced, cyclic,
+    alpha (Patterson and Williams (1976) <doi:10.1093/biomet/63.1.83>) and
+    lattice incomplete blocks, augmented designs, factorials, split-plots,
+    strip-plots, split-split-plots and nested designs, with or without
+    covariates. Each analysis of variance tests every term against its own
+    error stratum, with Satterthwaite (1946) <doi:10.2307/3002019> degrees
+    of freedom for pooled errors; least-squares means are separated with
+    eleven multiple-comparison procedures, among them Dunnett (1955)
+    <doi:10.1080/01621459.1955.10501294>, and compact letters, with simple
+    effects, trends and contrasts. It checks the assumptions, offers
+    transformations and rank-based alternatives, recovers inter-block
+    information by restricted maximum likelihood (Patterson and Thompson
+    (1971) <doi:10.1093/biomet/58.3.545>), randomises field layouts with
+    field books and power calculations, draws publication figures and
+    writes HTML reports. It also includes plant breeding analyses
+    (additive main effects and multiplicative interaction, Gollob (1968)
+    <doi:10.1007/BF02289676>; stability, Eberhart and Russell (1966)
+    <doi:10.2135/cropsci1966.0011183X000600010011x>; line by tester;
+    diallel, Griffing (1956) <doi:10.1071/BI9560463>; North Carolina
+    designs) and plant pathology tools (area under the disease progress
+    curve and stairs, Simko and Piepho (2012) <doi:10.1094/PHYTO-07-11-0216>;
+    soil heterogeneity). Only base R is used.
 License: GPL (>= 3)
 URL: https://github.com/luisangelbg/AgriDesign-R,
     https://luisangelbg.github.io/AgriDesign-R/
@@ -38,6 +46,7 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
+Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.1

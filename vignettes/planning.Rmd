@@ -35,8 +35,17 @@ across the gradient are usually cheaper than more plots.
 
 ## Randomising the layout
 
-`make_design()` randomises sixteen designs. The randomisation is reproducible
-with `seed` and does not change the random state of the session.
+`make_design()` randomises sixteen designs. `designs("layout")` lists them with
+the arguments each one needs, its conditions and the design of `design_anova()`
+that analyses its field book:
+
+```{r}
+designs("layout")[, c("id", "name", "needs", "analyse_as")]
+```
+
+The randomisation is reproducible with `seed` and does not change the random
+state of the session. Printing the layout shows, at the end, the call that
+analyses it once the responses are in the field book.
 
 ```{r}
 lay <- make_design("rcbd", trt = c("N0", "N60", "N120", "N180", "N240"), r = 4, seed = 2026)
