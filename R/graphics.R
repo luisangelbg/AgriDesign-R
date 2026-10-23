@@ -638,22 +638,87 @@ save_figure <- function(file, expr, width = 16, height = 11, units = c("cm", "mm
   k <- switch(units, cm = 1 / 2.54, mm = 1 / 25.4, `in` = 1)
   wi <- width * k; hi <- height * k
   ext <- tolower(sub(".*\\.", "", basename(file)))
-  cairo <- isTRUE(capabilities("cairo"))
+  bt <- .bitmap_type()
   switch(ext,
-    png = grDevices::png(file, width = wi, height = hi, units = "in", res = res, pointsize = pointsize,
-                         type = if (cairo) "cairo" else getOption("bitmapType")),
+    png = grDevices::png(file, width = wi, height = hi, units = "in", res = res, pointsize = pointsize, type = bt),
     tif = , tiff = grDevices::tiff(file, width = wi, height = hi, units = "in", res = res, pointsize = pointsize,
-                                   compression = "lzw", type = if (cairo) "cairo" else getOption("bitmapType")),
+                                   compression = "lzw", type = bt),
     jpg = , jpeg = grDevices::jpeg(file, width = wi, height = hi, units = "in", res = res, pointsize = pointsize,
-                                   quality = 95, type = if (cairo) "cairo" else getOption("bitmapType")),
+                                   quality = 95, type = bt),
     pdf = grDevices::pdf(file, width = wi, height = hi, pointsize = pointsize, useDingbats = FALSE),
-    svg = { if (!cairo) stop("SVG output needs cairo support in this R", call. = FALSE)
+    svg = { if (!.cairo_ok()) stop("SVG output needs a working cairo graphics device ",
+                                   "(on macOS, install XQuartz); use pdf or eps for vector figures", call. = FALSE)
             grDevices::svg(file, width = wi, height = hi, pointsize = pointsize) },
     eps = grDevices::postscript(file, width = wi, height = hi, pointsize = pointsize, horizontal = FALSE,
                                 onefile = FALSE, paper = "special"),
     stop("unknown format '.", ext, "'; use png, tiff, jpg, pdf, svg or eps", call. = FALSE))
   dev <- grDevices::dev.cur()
-  on.exit(if (dev %in% grDevices::dev.list()) grDevices::dev.off(dev))
-  force(expr)
+  tryCatch(force(expr), finally = if (dev %in% grDevices::dev.list()) grDevices::dev.off(dev))
+  # some devices (Quartz) do not record the resolution: write it in the pHYs chunk
+  if (ext == "png" && file.exists(file)) .png_set_dpi(file, res)
   invisible(file)
+}
+
+# ---------- devices that work on every platform ----------
+
+.dev_env <- new.env(parent = emptyenv())
+
+# capabilities("cairo") can be TRUE although cairo devices cannot open (macOS
+# without XQuartz); try one once per session.
+.cairo_ok <- function() {
+  if (is.null(.dev_env$cairo)) {
+    .dev_env$cairo <- isTRUE(capabilities("cairo")) && tryCatch({
+      f <- tempfile(fileext = ".png")
+      n0 <- length(grDevices::dev.list())
+      grDevices::png(f, width = 60, height = 60, type = "cairo")
+      d <- grDevices::dev.cur()
+      tryCatch({
+        graphics::par(mar = c(0, 0, 0, 0))
+        graphics::plot.new()        # a device writes its file only once a page exists
+      }, finally = if (length(grDevices::dev.list()) > n0) grDevices::dev.off(d))
+      ok <- file.exists(f); unlink(f); ok
+    }, warning = function(w) FALSE, error = function(e) FALSE)
+  }
+  .dev_env$cairo
+}
+
+.bitmap_type <- function() {
+  if (.cairo_ok()) "cairo"
+  else if (isTRUE(capabilities("aqua"))) "quartz"
+  else if (.Platform$OS.type == "windows") "windows"
+  else if (!is.null(getOption("bitmapType"))) getOption("bitmapType")
+  else "Xlib"
+}
+
+# CRC-32 of a raw vector (PNG chunks), with 32-bit values kept as doubles.
+.xor32 <- function(a, b) bitwXor(a %/% 65536, b %/% 65536) * 65536 + bitwXor(a %% 65536, b %% 65536)
+.crc_table <- local({
+  tab <- numeric(256)
+  for (n in 0:255) {
+    c <- n
+    for (j in 1:8) c <- if (c %% 2 == 1) .xor32(3988292384, c %/% 2) else c %/% 2
+    tab[n + 1] <- c
+  }
+  tab
+})
+.crc32 <- function(bytes) {
+  c <- 4294967295
+  for (b in as.integer(bytes)) c <- .xor32(.crc_table[bitwXor(c %% 256, b) + 1], c %/% 256)
+  .xor32(c, 4294967295)
+}
+.be32 <- function(x) as.raw(c(x %/% 16777216, (x %/% 65536) %% 256, (x %/% 256) %% 256, x %% 256))
+
+# Writes (or replaces) the pHYs chunk of a PNG file with `res` dots per inch.
+.png_set_dpi <- function(file, res) {
+  b <- readBin(file, "raw", file.size(file))
+  if (length(b) < 33 || !identical(b[2:4], charToRaw("PNG"))) return(invisible(FALSE))
+  ppm <- round(res / 0.0254)
+  data <- c(charToRaw("pHYs"), .be32(ppm), .be32(ppm), as.raw(1))
+  chunk <- c(.be32(9), data, .be32(.crc32(data)))
+  idat <- grepRaw("IDAT", b, fixed = TRUE)
+  i <- if (length(idat)) grepRaw("pHYs", b[seq_len(idat)], fixed = TRUE) else integer(0)
+  b <- if (length(i)) c(b[seq_len(i - 5)], chunk, b[-seq_len(i + 4 + 9 + 4 - 1)])
+       else c(b[1:33], chunk, b[-(1:33)])
+  writeBin(b, file)
+  invisible(TRUE)
 }

@@ -53,7 +53,7 @@ for (e in c("tiff", "jpg", "pdf", "svg", "eps")) {
 }
 # resolution in the PNG header (pHYs chunk: pixels per metre)
 f <- file.path(tempdir(), "dpi.png"); save_figure(f, plot(cmp), width = 8, height = 6, res = 600)
-b <- readBin(f, "raw", 200); i <- grepRaw("pHYs", b)
+b <- readBin(f, "raw", file.size(f)); i <- grepRaw("pHYs", b)
 ppm <- sum(as.integer(b[(i + 4):(i + 7)]) * 256^(3:0))
 chk("PNG carries 600 dpi in its header", round(ppm * 0.0254), 600)
 chk("no device left open", length(dev.list()), 0)

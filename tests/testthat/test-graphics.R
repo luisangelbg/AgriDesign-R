@@ -53,12 +53,36 @@ test_that("the field map needs the field coordinates", {
   expect_equal(nrow(unique(r[c("row", "col")])), 16)
 })
 
+test_that("without a working cairo device (macOS without XQuartz) figures and reports still work", {
+  env <- AgriDesign:::.dev_env
+  old <- env$cairo
+  on.exit(assign("cairo", old, envir = env))
+  AgriDesign:::.cairo_ok()
+  assign("cairo", FALSE, envir = env)
+  f <- design_anova(maize_nitrogen, "Yield_t_ha", "Nitrogen_kg_ha", block = "Block")
+  n0 <- length(grDevices::dev.list())
+  png <- tempfile(fileext = ".png")
+  save_figure(png, plot(f), width = 8, height = 6, res = 300)
+  b <- readBin(png, "raw", file.size(png)); i <- grepRaw("pHYs", b)
+  expect_equal(round(sum(as.integer(b[(i + 4):(i + 7)]) * 256^(3:0)) * 0.0254), 300)
+  h <- design_report(f, assumptions = FALSE, pairwise = FALSE)
+  expect_gte(attr(h, "figures"), 2)
+  expect_true(grepl("data:image/png;base64", h, fixed = TRUE))
+  expect_error(save_figure(tempfile(fileext = ".svg"), plot(f)), "cairo")
+  expect_equal(length(grDevices::dev.list()), n0)
+})
+
+test_that("the PNG resolution chunk is written with a valid CRC", {
+  expect_equal(AgriDesign:::.crc32(charToRaw("123456789")), 3421780262)
+  expect_equal(AgriDesign:::.crc32(charToRaw("IEND")), 2923585666)
+})
+
 test_that("save_figure writes raster files with their resolution and closes the device", {
   f <- design_anova(maize_nitrogen, "Yield_t_ha", "Nitrogen_kg_ha", block = "Block")
   n0 <- length(grDevices::dev.list())
   png <- tempfile(fileext = ".png")
   save_figure(png, plot(compare_means(f, "Nitrogen_kg_ha")), width = 8, height = 6, res = 300)
-  b <- readBin(png, "raw", 200); i <- grepRaw("pHYs", b)
+  b <- readBin(png, "raw", file.size(png)); i <- grepRaw("pHYs", b)
   ppm <- sum(as.integer(b[(i + 4):(i + 7)]) * 256^(3:0))
   expect_equal(round(ppm * 0.0254), 300)
   pdf <- tempfile(fileext = ".pdf")

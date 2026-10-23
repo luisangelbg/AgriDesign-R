@@ -44,7 +44,7 @@
 # Draws `expr` into an SVG (cairo) or, without cairo, a PNG, and returns the markup to inline.
 .inline_figure <- function(env, expr, caption, width = 16, height = 10.5) {
   env$fig <- env$fig + 1
-  cairo <- isTRUE(capabilities("cairo"))
+  cairo <- .cairo_ok()
   f <- tempfile(fileext = if (cairo) ".svg" else ".png")
   on.exit(unlink(f))
   ok <- tryCatch({ save_figure(f, expr, width = width, height = height, res = 200); TRUE }, error = function(e) FALSE)
