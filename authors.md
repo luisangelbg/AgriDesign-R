@@ -8,11 +8,11 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/luisangelbg/AgriDesign-R/blob/v1.0.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/luisangelbg/AgriDesign-R/blob/main/inst/CITATION)
 
 Barrera-Guzmán, L. Á. (2026). AgriDesign: Design and Analysis of
 Agricultural Experiments. R package version 1.0.0.
-https://github.com/luisangelbg/AgriDesign-R
+https://doi.org/10.5281/zenodo.23603710
 
     @Manual{,
       title = {{AgriDesign}: Design and Analysis of Agricultural Experiments},
@@ -20,4 +20,5 @@ https://github.com/luisangelbg/AgriDesign-R
       year = {2026},
       note = {R package version 1.0.0},
       url = {https://github.com/luisangelbg/AgriDesign-R},
+      doi = {10.5281/zenodo.23603710},
     }
