@@ -38,6 +38,7 @@ reference:
   - designs
   - ls_means
   - recover_interblock
+  - ad_methods
 - title: Assumptions
   contents:
   - check_assumptions
