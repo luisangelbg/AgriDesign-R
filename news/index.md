@@ -30,6 +30,13 @@ First public release.
   [`median_test()`](https://luisangelbg.github.io/AgriDesign-R/reference/median_test.md).
 - [`recover_interblock()`](https://luisangelbg.github.io/AgriDesign-R/reference/recover_interblock.md):
   combined intra- and inter-block analysis by REML.
+- [`residuals()`](https://rdrr.io/r/stats/residuals.html),
+  [`fitted()`](https://rdrr.io/r/stats/fitted.values.html),
+  [`nobs()`](https://rdrr.io/r/stats/nobs.html) and
+  [`anova()`](https://rdrr.io/r/stats/anova.html) methods for fitted
+  designs, and
+  [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) for
+  mean comparisons.
 
 ### Planning
 
@@ -40,6 +47,10 @@ First public release.
   [`design_efficiency()`](https://luisangelbg.github.io/AgriDesign-R/reference/design_efficiency.md)
   and
   [`power_design()`](https://luisangelbg.github.io/AgriDesign-R/reference/power_design.md).
+  `designs("layout")` lists the designs with the arguments each one
+  needs, and every layout reports the
+  [`design_anova()`](https://luisangelbg.github.io/AgriDesign-R/reference/design_anova.md)
+  call that analyses it.
 
 ### Plant breeding and pathology
 

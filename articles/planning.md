@@ -50,8 +50,53 @@ blocks laid across the gradient are usually cheaper than more plots.
 ## Randomising the layout
 
 [`make_design()`](https://luisangelbg.github.io/AgriDesign-R/reference/make_design.md)
-randomises sixteen designs. The randomisation is reproducible with
-`seed` and does not change the random state of the session.
+randomises sixteen designs. `designs("layout")` lists them with the
+arguments each one needs, its conditions and the design of
+[`design_anova()`](https://luisangelbg.github.io/AgriDesign-R/reference/design_anova.md)
+that analyses its field book:
+
+``` r
+
+designs("layout")[, c("id", "name", "needs", "analyse_as")]
+#>            id                                                                     name
+#> 1         crd                                       Completely randomised design (CRD)
+#> 2        rcbd                                  Randomised complete block design (RCBD)
+#> 3       latin                                                             Latin square
+#> 4    fact_crd                                                         Factorial in CRD
+#> 5   fact_rcbd                                                        Factorial in RCBD
+#> 6  split_rcbd                                                       Split-plot in RCBD
+#> 7       strip                                         Strip-plot (split-block) in RCBD
+#> 8  splitsplit                                                 Split-split-plot in RCBD
+#> 9         ibd Resolvable incomplete blocks (random blocks of size k within replicates)
+#> 10  augmented          Augmented design (checks in every block + unreplicated entries)
+#> 11     graeco                                                      Graeco-Latin square
+#> 12     youden                                                            Youden square
+#> 13        bib                                  Balanced incomplete block design (BIBD)
+#> 14     cyclic                                           Cyclic incomplete block design
+#> 15      alpha                              Alpha design (resolvable incomplete blocks)
+#> 16    lattice                                                           Square lattice
+#>                 needs      analyse_as
+#> 1              trt, r             crd
+#> 2              trt, r            rcbd
+#> 3                 trt           latin
+#> 4         A, B (C), r        fact_crd
+#> 5         A, B (C), r       fact_rcbd
+#> 6             A, B, r      split_rcbd
+#> 7             A, B, r      strip_rcbd
+#> 8          A, B, C, r splitsplit_rcbd
+#> 9           trt, k, r             ibd
+#> 10 checks, entries, r       augmented
+#> 11        trt (greek)          graeco
+#> 12             trt, k          youden
+#> 13             trt, k             bib
+#> 14          trt, k, r             bib
+#> 15          trt, k, r             ibd
+#> 16          trt, k, r             ibd
+```
+
+The randomisation is reproducible with `seed` and does not change the
+random state of the session. Printing the layout shows, at the end, the
+call that analyses it once the responses are in the field book.
 
 ``` r
 
@@ -78,10 +123,13 @@ lay
 #>     6     2        2        5       N60
 #>     7     2        2        4      N240
 #>     8     2        2        3        N0
+#> 
+#> Analysis, once the responses are in the field book:
+#>   design_anova(data, "response", "Treatment", block = "Block", design = "rcbd")
 plot(lay)
 ```
 
-![](planning_files/figure-html/unnamed-chunk-3-1.png)
+![](planning_files/figure-html/unnamed-chunk-4-1.png)
 
 Split-plots keep the main plots together and randomise inside them:
 
@@ -92,7 +140,7 @@ sp <- make_design("split_rcbd", A = c("Drip", "Furrow"), B = paste0("V", 1:4), r
 plot(sp)
 ```
 
-![](planning_files/figure-html/unnamed-chunk-4-1.png)
+![](planning_files/figure-html/unnamed-chunk-5-1.png)
 
 ## Incomplete blocks
 
@@ -124,7 +172,7 @@ design_efficiency(make_design("bib", trt = 7, k = 3, seed = 1))$E
 plot(make_design("youden", trt = 7, k = 3, seed = 1))
 ```
 
-![](planning_files/figure-html/unnamed-chunk-6-1.png)
+![](planning_files/figure-html/unnamed-chunk-7-1.png)
 
 ## The field book
 

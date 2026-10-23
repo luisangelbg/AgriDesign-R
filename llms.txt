@@ -206,7 +206,7 @@ power_design(cv = 12, diff = 15, t = 20)$replicates
 | Means | [`compare_means()`](https://luisangelbg.github.io/AgriDesign-R/reference/compare_means.md) (Tukey, LSD, Bonferroni, Sidak, Holm, Duncan, SNK, REGWQ, Scheffe, Dunnett, Games-Howell; simple effects), [`waller_duncan()`](https://luisangelbg.github.io/AgriDesign-R/reference/waller_duncan.md), [`trend()`](https://luisangelbg.github.io/AgriDesign-R/reference/trend.md), [`test_contrasts()`](https://luisangelbg.github.io/AgriDesign-R/reference/test_contrasts.md) |
 | Rank-based tests | [`nonparametric()`](https://luisangelbg.github.io/AgriDesign-R/reference/nonparametric.md) (Kruskal-Wallis, Welch, Friedman, Scheirer-Ray-Hare, aligned ranks), [`durbin_test()`](https://luisangelbg.github.io/AgriDesign-R/reference/durbin_test.md), [`waerden_test()`](https://luisangelbg.github.io/AgriDesign-R/reference/waerden_test.md), [`median_test()`](https://luisangelbg.github.io/AgriDesign-R/reference/median_test.md) |
 | Incomplete blocks | [`recover_interblock()`](https://luisangelbg.github.io/AgriDesign-R/reference/recover_interblock.md) (REML), [`design_efficiency()`](https://luisangelbg.github.io/AgriDesign-R/reference/design_efficiency.md) |
-| Planning | [`make_design()`](https://luisangelbg.github.io/AgriDesign-R/reference/make_design.md) (16 designs), [`field_book()`](https://luisangelbg.github.io/AgriDesign-R/reference/field_book.md), [`power_design()`](https://luisangelbg.github.io/AgriDesign-R/reference/power_design.md) |
+| Planning | [`make_design()`](https://luisangelbg.github.io/AgriDesign-R/reference/make_design.md) (16 designs, listed by `designs("layout")`), [`field_book()`](https://luisangelbg.github.io/AgriDesign-R/reference/field_book.md), [`power_design()`](https://luisangelbg.github.io/AgriDesign-R/reference/power_design.md) |
 | Plant breeding | [`ammi()`](https://luisangelbg.github.io/AgriDesign-R/reference/ammi.md), [`stability()`](https://luisangelbg.github.io/AgriDesign-R/reference/stability.md), [`line_tester()`](https://luisangelbg.github.io/AgriDesign-R/reference/line_tester.md), [`diallel()`](https://luisangelbg.github.io/AgriDesign-R/reference/diallel.md), [`nc_design()`](https://luisangelbg.github.io/AgriDesign-R/reference/nc_design.md) |
 | Plant pathology | [`audpc()`](https://luisangelbg.github.io/AgriDesign-R/reference/audpc.md), [`audps()`](https://luisangelbg.github.io/AgriDesign-R/reference/audpc.md), [`audpc_by_unit()`](https://luisangelbg.github.io/AgriDesign-R/reference/audpc_by_unit.md), [`smith_index()`](https://luisangelbg.github.io/AgriDesign-R/reference/smith_index.md), [`hatheway_size()`](https://luisangelbg.github.io/AgriDesign-R/reference/hatheway_size.md) |
 | Figures and report | [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods, [`plot_interaction()`](https://luisangelbg.github.io/AgriDesign-R/reference/plot_interaction.md), [`plot_differences()`](https://luisangelbg.github.io/AgriDesign-R/reference/plot_differences.md), [`plot_cell_means()`](https://luisangelbg.github.io/AgriDesign-R/reference/plot_cell_means.md), [`plot_ss_partition()`](https://luisangelbg.github.io/AgriDesign-R/reference/plot_ss_partition.md), [`plot_field()`](https://luisangelbg.github.io/AgriDesign-R/reference/plot_field.md), [`save_figure()`](https://luisangelbg.github.io/AgriDesign-R/reference/save_figure.md), [`design_report()`](https://luisangelbg.github.io/AgriDesign-R/reference/design_report.md) |
@@ -239,11 +239,17 @@ Fit the model of a design and get its least-squares means.
 - [`design_anova()`](https://luisangelbg.github.io/AgriDesign-R/reference/design_anova.md)
   : Analysis of variance of an experimental design
 - [`designs()`](https://luisangelbg.github.io/AgriDesign-R/reference/designs.md)
-  : List the experimental designs that can be analysed
+  : List the designs that can be analysed or randomised
 - [`ls_means()`](https://luisangelbg.github.io/AgriDesign-R/reference/ls_means.md)
   : Least-squares means of a design
 - [`recover_interblock()`](https://luisangelbg.github.io/AgriDesign-R/reference/recover_interblock.md)
   : Recover inter-block information (REML)
+- [`residuals(`*`<ad_anova>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  [`fitted(`*`<ad_anova>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  [`nobs(`*`<ad_anova>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  [`anova(`*`<ad_anova>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  [`as.data.frame(`*`<ad_comparison>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  : Standard methods for fitted designs
 
 ## Assumptions
 

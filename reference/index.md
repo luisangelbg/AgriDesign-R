@@ -7,11 +7,17 @@ Fit the model of a design and get its least-squares means.
 - [`design_anova()`](https://luisangelbg.github.io/AgriDesign-R/reference/design_anova.md)
   : Analysis of variance of an experimental design
 - [`designs()`](https://luisangelbg.github.io/AgriDesign-R/reference/designs.md)
-  : List the experimental designs that can be analysed
+  : List the designs that can be analysed or randomised
 - [`ls_means()`](https://luisangelbg.github.io/AgriDesign-R/reference/ls_means.md)
   : Least-squares means of a design
 - [`recover_interblock()`](https://luisangelbg.github.io/AgriDesign-R/reference/recover_interblock.md)
   : Recover inter-block information (REML)
+- [`residuals(`*`<ad_anova>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  [`fitted(`*`<ad_anova>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  [`nobs(`*`<ad_anova>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  [`anova(`*`<ad_anova>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  [`as.data.frame(`*`<ad_comparison>`*`)`](https://luisangelbg.github.io/AgriDesign-R/reference/ad_methods.md)
+  : Standard methods for fitted designs
 
 ## Assumptions
 

@@ -1,10 +1,10 @@
 # AgriDesign: design and analysis of agricultural experiments
 
+## Details
+
 Analysis of variance of the classical agricultural designs with the
 right error strata, least-squares means, assumption checks, mean
 separation, figures, reports and randomised field layouts. Base R only.
-
-## Details
 
 Start with
 [`designs()`](https://luisangelbg.github.io/AgriDesign-R/reference/designs.md)
