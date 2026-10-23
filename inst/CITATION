@@ -6,6 +6,7 @@ bibentry(
   year = "2026",
   note = paste("R package version", meta$Version),
   url = "https://github.com/luisangelbg/AgriDesign-R",
+  doi = "10.5281/zenodo.23603710",
   textVersion = paste0("Barrera-Guzmán, L. Á. (2026). AgriDesign: Design and Analysis of Agricultural Experiments. ",
-                       "R package version ", meta$Version, ". https://github.com/luisangelbg/AgriDesign-R")
+                       "R package version ", meta$Version, ". https://doi.org/10.5281/zenodo.23603710")
 )

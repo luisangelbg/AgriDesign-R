@@ -14,7 +14,15 @@ authors:
     email: lbarrerag@chapingo.mx
     orcid: "https://orcid.org/0000-0001-8057-2583"
 version: "1.0.0"
-date-released: "2026-10-22"
+date-released: "2026-10-23"
+doi: "10.5281/zenodo.23603710"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23603710"
+    description: "Concept DOI (all versions)"
+  - type: doi
+    value: "10.5281/zenodo.23603711"
+    description: "Version 1.0.0"
 license: GPL-3.0-or-later
 repository-code: "https://github.com/luisangelbg/AgriDesign-R"
 url: "https://luisangelbg.github.io/AgriDesign-R/"

@@ -3,6 +3,12 @@
 
 # AgriDesign <img src="man/figures/logo.png" align="right" height="139" alt="AgriDesign hexagon logo: a field trial laid out as a Latin square with a maize plant growing from it" />
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/luisangelbg/AgriDesign-R/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/luisangelbg/AgriDesign-R/actions/workflows/R-CMD-check.yaml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23603710.svg)](https://doi.org/10.5281/zenodo.23603710)
+<!-- badges: end -->
+
 **Design and analysis of agricultural experiments in R.**
 
 AgriDesign plans and analyses field, greenhouse and laboratory
@@ -215,8 +221,9 @@ found with other software.
 
 ## Citation
 
-    Barrera-Guzmán L (2026). _AgriDesign: Design and Analysis of Agricultural Experiments_. R
-    package version 1.0.0, <https://github.com/luisangelbg/AgriDesign-R>.
+    Barrera-Guzmán L (2026). _AgriDesign: Design and Analysis of Agricultural Experiments_.
+    doi:10.5281/zenodo.23603710 <https://doi.org/10.5281/zenodo.23603710>. R package version
+    1.0.0, <https://github.com/luisangelbg/AgriDesign-R>.
 
 ## Licence
 

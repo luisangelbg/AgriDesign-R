@@ -12,6 +12,11 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.path = "man/figures/R
 
 # AgriDesign <img src="man/figures/logo.png" align="right" height="139" alt="AgriDesign hexagon logo: a field trial laid out as a Latin square with a maize plant growing from it" />
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/luisangelbg/AgriDesign-R/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/luisangelbg/AgriDesign-R/actions/workflows/R-CMD-check.yaml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23603710.svg)](https://doi.org/10.5281/zenodo.23603710)
+<!-- badges: end -->
+
 **Design and analysis of agricultural experiments in R.**
 
 AgriDesign plans and analyses field, greenhouse and laboratory experiments with
