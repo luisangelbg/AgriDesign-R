@@ -8,6 +8,9 @@
 A data frame with 4 rows and 5 columns: \code{Block} and the yields
 (t/ha) at \code{N0}, \code{N60}, \code{N120} and \code{N180}.
 }
+\source{
+Simulated data, created as teaching examples (not from a real trial).
+}
 \usage{
 maize_wide
 }

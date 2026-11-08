@@ -12,6 +12,9 @@ A data frame with 20 rows and 3 columns:
 \item{Severity_score}{Disease severity score.}
 }
 }
+\source{
+Simulated data, created as teaching examples (not from a real trial).
+}
 \usage{
 disease_scores
 }

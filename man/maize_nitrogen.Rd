@@ -12,6 +12,9 @@ A data frame with 16 rows and 3 columns:
 \item{Yield_t_ha}{Grain yield, t/ha.}
 }
 }
+\source{
+Simulated data, created as teaching examples (not from a real trial).
+}
 \usage{
 maize_nitrogen
 }

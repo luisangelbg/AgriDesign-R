@@ -10,6 +10,7 @@
 #' }
 #' @examples
 #' design_anova(maize_nitrogen, "Yield_t_ha", "Nitrogen_kg_ha", block = "Block")
+#' @source Simulated data, created as teaching examples (not from a real trial).
 "maize_nitrogen"
 
 #' Yield of five bean varieties (CRD)
@@ -24,6 +25,7 @@
 #' }
 #' @examples
 #' design_anova(bean_varieties, "Yield_kg_plot", "Variety")
+#' @source Simulated data, created as teaching examples (not from a real trial).
 "bean_varieties"
 
 #' Disease severity scores under four fungicides (RCBD)
@@ -37,6 +39,7 @@
 #'   \item{Fungicide}{Fungicide treatment, including an untreated control.}
 #'   \item{Severity_score}{Disease severity score.}
 #' }
+#' @source Simulated data, created as teaching examples (not from a real trial).
 "disease_scores"
 
 #' Tomato varieties by fertiliser (factorial in RCBD)
@@ -54,6 +57,7 @@
 #' @examples
 #' design_anova(tomato_factorial, "Yield_kg_plant", c("Variety", "Fertilizer"),
 #'              block = "Block")
+#' @source Simulated data, created as teaching examples (not from a real trial).
 "tomato_factorial"
 
 #' Wheat yield in a 4 x 4 Latin square
@@ -67,6 +71,7 @@
 #' }
 #' @examples
 #' design_anova(wheat_latin, "Yield_t_ha", "Treatment", row = "Row", col = "Column")
+#' @source Simulated data, created as teaching examples (not from a real trial).
 "wheat_latin"
 
 #' Irrigation systems by varieties (split-plot in RCBD)
@@ -84,6 +89,7 @@
 #' @examples
 #' design_anova(split_irrigation, "Yield_t_ha", c("Irrigation", "Variety"),
 #'              block = "Block", design = "split_rcbd")
+#' @source Simulated data, created as teaching examples (not from a real trial).
 "split_irrigation"
 
 #' Maize nitrogen trial in wide format
@@ -94,4 +100,5 @@
 #'
 #' @format A data frame with 4 rows and 5 columns: `Block` and the yields
 #'   (t/ha) at `N0`, `N60`, `N120` and `N180`.
+#' @source Simulated data, created as teaching examples (not from a real trial).
 "maize_wide"

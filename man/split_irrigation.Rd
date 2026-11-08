@@ -13,6 +13,9 @@ A data frame with 24 rows and 4 columns:
 \item{Yield_t_ha}{Yield, t/ha.}
 }
 }
+\source{
+Simulated data, created as teaching examples (not from a real trial).
+}
 \usage{
 split_irrigation
 }

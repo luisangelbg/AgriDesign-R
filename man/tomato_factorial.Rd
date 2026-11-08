@@ -14,6 +14,9 @@ A data frame with 27 rows and 5 columns:
 \item{Height_cm}{Plant height, cm.}
 }
 }
+\source{
+Simulated data, created as teaching examples (not from a real trial).
+}
 \usage{
 tomato_factorial
 }

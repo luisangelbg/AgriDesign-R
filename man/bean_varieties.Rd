@@ -12,6 +12,9 @@ A data frame with 20 rows and 3 columns:
 \item{Yield_kg_plot}{Yield, kg per plot.}
 }
 }
+\source{
+Simulated data, created as teaching examples (not from a real trial).
+}
 \usage{
 bean_varieties
 }
