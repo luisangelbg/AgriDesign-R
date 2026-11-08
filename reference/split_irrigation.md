@@ -29,6 +29,10 @@ A data frame with 24 rows and 4 columns:
 
   Yield, t/ha.
 
+## Source
+
+Simulated data, created as teaching examples (not from a real trial).
+
 ## Examples
 
 ``` r

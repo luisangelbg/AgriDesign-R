@@ -15,3 +15,7 @@ maize_wide
 
 A data frame with 4 rows and 5 columns: `Block` and the yields (t/ha) at
 `N0`, `N60`, `N120` and `N180`.
+
+## Source
+
+Simulated data, created as teaching examples (not from a real trial).

@@ -24,6 +24,10 @@ A data frame with 20 rows and 3 columns:
 
   Yield, kg per plot.
 
+## Source
+
+Simulated data, created as teaching examples (not from a real trial).
+
 ## Examples
 
 ``` r

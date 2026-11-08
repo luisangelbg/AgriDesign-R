@@ -24,3 +24,7 @@ A data frame with 20 rows and 3 columns:
 - Severity_score:
 
   Disease severity score.
+
+## Source
+
+Simulated data, created as teaching examples (not from a real trial).

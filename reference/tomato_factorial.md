@@ -32,6 +32,10 @@ A data frame with 27 rows and 5 columns:
 
   Plant height, cm.
 
+## Source
+
+Simulated data, created as teaching examples (not from a real trial).
+
 ## Examples
 
 ``` r

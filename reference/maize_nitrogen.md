@@ -25,6 +25,10 @@ A data frame with 16 rows and 3 columns:
 
   Grain yield, t/ha.
 
+## Source
+
+Simulated data, created as teaching examples (not from a real trial).
+
 ## Examples
 
 ``` r
