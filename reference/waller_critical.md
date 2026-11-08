@@ -11,7 +11,7 @@ differences are declared.
 ## Usage
 
 ``` r
-waller_critical(K = 100, q, f, F)
+waller_critical(K = 100, q, f, F_ratio)
 ```
 
 ## Arguments
@@ -25,7 +25,7 @@ waller_critical(K = 100, q, f, F)
 
   Degrees of freedom of the treatments and of the error.
 
-- F:
+- F_ratio:
 
   Observed F ratio of the treatments.
 
@@ -46,8 +46,8 @@ Simulation* 4, 169-171.
 ## Examples
 
 ``` r
-waller_critical(100, q = 5, f = 24, F = 14.37)
+waller_critical(100, q = 5, f = 24, F_ratio = 14.37)
 #> [1] 1.918732
-waller_critical(100, q = 4, f = 20, F = c(2, 5, 10, 100))
+waller_critical(100, q = 4, f = 20, F_ratio = c(2, 5, 10, 100))
 #> [1] 2.508500 2.143551 1.991624 1.873337
 ```

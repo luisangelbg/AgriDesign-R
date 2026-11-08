@@ -42,21 +42,21 @@ recover_interblock(fit)
 #> 
 #> Recovery of inter-block information (REML)
 #> Incomplete block design (lattice, alpha, BIBD), intra-block analysis
-#> Variance components: blocks = 0, error = 0.7576 (block variance on the boundary: no inter-block information)
-#> Average SE of a difference: combined 0.7107, intra-block 1.044, replicates as complete blocks 0.7107
-#> Relative efficiency of the combined analysis: 215.7 % of the intra-block analysis, 100.0 % of complete blocks
+#> Variance components: blocks = 0, error = 0.8485 (block variance on the boundary: no inter-block information)
+#> Average SE of a difference: combined 0.7521, intra-block 1.09, replicates as complete blocks 0.7521
+#> Relative efficiency of the combined analysis: 209.9 % of the intra-block analysis, 100.0 % of complete blocks
 #> 
 #>  level n  mean     se intra_mean
-#>    T11 3 10.27 0.5025     10.378
-#>     T4 3 11.07 0.5025     11.254
-#>     T6 3 12.13 0.5025     12.012
-#>     T5 3 10.93 0.5025     10.704
-#>    T10 3 10.73 0.5025     10.714
-#>     T1 3 10.87 0.5025     11.162
-#>     T3 3 11.53 0.5025     11.696
-#>     T9 3 12.40 0.5025     12.629
-#>    T12 3 11.47 0.5025     11.730
-#>     T7 3 11.67 0.5025     11.479
-#>     T2 3 10.33 0.5025      9.895
-#>     T8 3 12.20 0.5025     11.946
+#>    T11 3 10.27 0.5318      9.799
+#>     T4 3 11.40 0.5318     11.693
+#>     T6 3 12.13 0.5318     11.980
+#>     T5 3 10.93 0.5318     10.715
+#>    T10 3 10.73 0.5318     10.992
+#>     T1 3 10.87 0.5318     11.345
+#>     T3 3 11.53 0.5318     11.846
+#>     T9 3 12.40 0.5318     12.726
+#>    T12 3 10.80 0.5318     10.798
+#>     T7 3 11.33 0.5318     10.933
+#>     T2 3 11.00 0.5318     10.677
+#>     T8 3 12.20 0.5318     12.096
 ```
