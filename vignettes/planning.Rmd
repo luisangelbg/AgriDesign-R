@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-options(width = 100)
+old_options <- options(width = 100)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.6, dpi = 72, out.width = "100%")
 library(AgriDesign)
 ```
@@ -94,4 +94,8 @@ head(book)
 
 ```r
 field_book(lay, c("Yield", "Height"), file = "field-book.csv")
+```
+
+```{r, include = FALSE}
+options(old_options)
 ```

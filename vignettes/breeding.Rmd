@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-options(width = 100)
+old_options <- options(width = 100)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 5, dpi = 72, out.width = "100%")
 library(AgriDesign)
 ```
@@ -68,4 +68,8 @@ analysis of variance of the progenies:
 
 ```{r}
 nc_design(nc_designs$nc2, "Yield_t_ha", "Male", "Female", block = "Rep", set = "Set", design = 2)
+```
+
+```{r, include = FALSE}
+options(old_options)
 ```

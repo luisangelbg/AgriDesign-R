@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-options(width = 100)
+old_options <- options(width = 100)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.4, dpi = 72, out.width = "100%")
 library(AgriDesign)
 ```
@@ -116,4 +116,8 @@ d <- maize_nitrogen
 d$Stand <- c(58, 61, 63, 57, 60, 62, 59, 64, 55, 61, 60, 62, 63, 58, 59, 60)
 anc <- design_anova(d, "Yield_t_ha", "Nitrogen_kg_ha", block = "Block", covariate = "Stand")
 ls_means(anc, "Nitrogen_kg_ha")[, c("Nitrogen_kg_ha", "mean", "se", "raw_mean")]
+```
+
+```{r, include = FALSE}
+options(old_options)
 ```

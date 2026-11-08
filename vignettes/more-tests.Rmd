@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-options(width = 100)
+old_options <- options(width = 100)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.4, dpi = 72, out.width = "100%")
 library(AgriDesign)
 ```
@@ -73,4 +73,8 @@ gives the optimum plot size for a cost ratio:
 sm <- smith_index(uniformity_trial, cost_ratio = 2)
 sm
 plot(sm)
+```
+
+```{r, include = FALSE}
+options(old_options)
 ```

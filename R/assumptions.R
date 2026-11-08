@@ -18,8 +18,8 @@
   m <- tapply(x, g, mean); n <- tabulate(g)
   ssb <- sum(n * (m - mean(x))^2); ssw <- sum((x - m[g])^2)
   df1 <- nlevels(g) - 1; df2 <- length(x) - nlevels(g)
-  F <- (ssb / df1) / (ssw / df2)
-  c(F = F, df1 = df1, df2 = df2, p = stats::pf(F, df1, df2, lower.tail = FALSE))
+  Fs <- (ssb / df1) / (ssw / df2)
+  c(F = Fs, df1 = df1, df2 = df2, p = stats::pf(Fs, df1, df2, lower.tail = FALSE))
 }
 
 # Anderson-Darling with estimated mean and variance; Stephens' p for the
@@ -65,8 +65,8 @@
   df <- f1$df - f2$df
   if (df < 1) return(NULL)
   ss <- f1$sse - f2$sse
-  F <- (ss / df) / (f2$sse / f2$df)
-  c(F = F, df1 = df, df2 = f2$df, p = stats::pf(F, df, f2$df, lower.tail = FALSE), ss = ss)
+  Fs <- (ss / df) / (f2$sse / f2$df)
+  c(F = Fs, df1 = df, df2 = f2$df, p = stats::pf(Fs, df, f2$df, lower.tail = FALSE), ss = ss)
 }
 
 .durbin_watson <- function(e) sum(diff(e)^2) / sum(e^2)

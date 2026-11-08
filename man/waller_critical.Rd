@@ -4,7 +4,7 @@
 \alias{waller_critical}
 \title{Critical t of the Waller-Duncan k-ratio test}
 \usage{
-waller_critical(K = 100, q, f, F)
+waller_critical(K = 100, q, f, F_ratio)
 }
 \arguments{
 \item{K}{Ratio of the seriousness of a type I error to that of a type II
@@ -12,7 +12,7 @@ error (50, 100 and 500 roughly match alpha = 0.10, 0.05 and 0.01).}
 
 \item{q, f}{Degrees of freedom of the treatments and of the error.}
 
-\item{F}{Observed F ratio of the treatments.}
+\item{F_ratio}{Observed F ratio of the treatments.}
 }
 \value{
 A numeric vector of critical values (arguments are recycled).
@@ -26,8 +26,8 @@ as the observed F grows: with a small F the means are shrunk towards
 each other and few differences are declared.
 }
 \examples{
-waller_critical(100, q = 5, f = 24, F = 14.37)
-waller_critical(100, q = 4, f = 20, F = c(2, 5, 10, 100))
+waller_critical(100, q = 5, f = 24, F_ratio = 14.37)
+waller_critical(100, q = 4, f = 20, F_ratio = c(2, 5, 10, 100))
 }
 \references{
 Waller, R. A. and Duncan, D. B. (1969). A Bayes rule for the

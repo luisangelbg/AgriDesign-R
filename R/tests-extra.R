@@ -68,7 +68,7 @@
 #' @param K Ratio of the seriousness of a type I error to that of a type II
 #'   error (50, 100 and 500 roughly match alpha = 0.10, 0.05 and 0.01).
 #' @param q,f Degrees of freedom of the treatments and of the error.
-#' @param F Observed F ratio of the treatments.
+#' @param F_ratio Observed F ratio of the treatments.
 #' @return A numeric vector of critical values (arguments are recycled).
 #' @references Waller, R. A. and Duncan, D. B. (1969). A Bayes rule for the
 #'   symmetric multiple comparisons problem. *Journal of the American
@@ -78,14 +78,14 @@
 #'   for multiple comparisons. *Journal of Statistical Computation and
 #'   Simulation* 4, 169-171.
 #' @examples
-#' waller_critical(100, q = 5, f = 24, F = 14.37)
-#' waller_critical(100, q = 4, f = 20, F = c(2, 5, 10, 100))
+#' waller_critical(100, q = 5, f = 24, F_ratio = 14.37)
+#' waller_critical(100, q = 4, f = 20, F_ratio = c(2, 5, 10, 100))
 #' @export
-waller_critical <- function(K = 100, q, f, F) {
+waller_critical <- function(K = 100, q, f, F_ratio) {
   if (any(!is.finite(K)) || any(K <= 1)) stop("'K' must be greater than 1", call. = FALSE)
   if (any(q < 1) || any(f < 1)) stop("degrees of freedom 'q' and 'f' must be at least 1", call. = FALSE)
-  if (any(!(F > 0))) stop("'F' must be positive", call. = FALSE)
-  unname(mapply(.wd_crit, K, q, f, F))
+  if (any(!(F_ratio > 0))) stop("'F_ratio' must be positive", call. = FALSE)
+  unname(mapply(.wd_crit, K, q, f, F_ratio))
 }
 
 #' Waller-Duncan k-ratio t test

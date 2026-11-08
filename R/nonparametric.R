@@ -240,9 +240,9 @@ nonparametric <- function(fit, method = NULL, posthoc = c("conover", "nemenyi"),
       aligned <- full$fit$residuals + (fitted_full - (y - red$fit$residuals))
       rk <- rank(aligned)
       a <- .type3_term(X, rk, assign, i)
-      F <- (a[["ss"]] / a[["df"]]) / (a[["sse"]] / a[["dfe"]])
-      list(row = data.frame(term = fit$table$source[i], df = a[["df"]], df_error = a[["dfe"]], F = F,
-                            p = stats::pf(F, a[["df"]], a[["dfe"]], lower.tail = FALSE),
+      Fs <- (a[["ss"]] / a[["df"]]) / (a[["sse"]] / a[["dfe"]])
+      list(row = data.frame(term = fit$table$source[i], df = a[["df"]], df_error = a[["dfe"]], F = Fs,
+                            p = stats::pf(Fs, a[["df"]], a[["dfe"]], lower.tail = FALSE),
                             aligned_sum = sum(aligned), stringsAsFactors = FALSE),
            ranks = rk, mse = a[["sse"]] / a[["dfe"]], dfe = a[["dfe"]])
     })

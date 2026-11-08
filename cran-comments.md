@@ -1,3 +1,11 @@
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+* Renamed the argument `F` of `waller_critical()` to `F_ratio`, and the
+  internal variables named `F`, so that `T` and `F` are not used as names.
+* Reset the user's `options()` at the end of every vignette.
+
 ## Submission
 
 This is the first submission of AgriDesign.
